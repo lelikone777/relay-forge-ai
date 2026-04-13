@@ -12,10 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchLogs } from "@/lib/api";
 import { formatDuration, formatTimestamp } from "@/lib/format";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 const filters = ["all", "success", "fallback", "error"] as const;
 
 export default function LogsPage() {
+  const { locale } = useI18n();
   const [filter, setFilter] = useState<(typeof filters)[number]>("all");
   const { data, isLoading, refetch, isError } = useQuery({
     queryKey: ["logs"],
@@ -41,8 +44,11 @@ export default function LogsPage() {
   if (isError || !data) {
     return (
       <InlineError
-        title="Logs unavailable"
-        description="Recent request history could not be loaded."
+        title={pickLocale(locale, { ru: "Логи недоступны", en: "Logs unavailable" })}
+        description={pickLocale(locale, {
+          ru: "Не удалось загрузить историю последних запросов.",
+          en: "Recent request history could not be loaded."
+        })}
         onRetry={() => void refetch()}
       />
     );
@@ -51,24 +57,42 @@ export default function LogsPage() {
   return (
     <div className="space-y-8">
       <PageIntro
-        eyebrow="Observability"
-        title="Inspect request history and fallback behavior"
-        description="Logs are normalized into a compact gateway view so reliability decisions remain understandable without raw upstream noise."
-        actions={<Badge>{data.data.total} captured requests</Badge>}
+        eyebrow={pickLocale(locale, { ru: "Наблюдаемость", en: "Observability" })}
+        title={pickLocale(locale, {
+          ru: "Проверяйте историю запросов и поведение fallback",
+          en: "Inspect request history and fallback behavior"
+        })}
+        description={pickLocale(locale, {
+          ru: "Логи нормализуются в компактный gateway-вид, чтобы решения по надежности были понятны без сырого шума апстрима.",
+          en: "Logs are normalized into a compact gateway view so reliability decisions remain understandable without raw upstream noise."
+        })}
+        actions={
+          <Badge>
+            {data.data.total} {pickLocale(locale, { ru: "запросов записано", en: "captured requests" })}
+          </Badge>
+        }
       />
 
       <div className="flex flex-wrap gap-2">
         {filters.map((item) => (
           <Button key={item} variant={filter === item ? "default" : "secondary"} size="sm" onClick={() => setFilter(item)}>
-            {item}
+            {pickLocale(locale, {
+              ru: item === "all" ? "все" : item === "success" ? "успех" : item === "fallback" ? "fallback" : "ошибка",
+              en: item
+            })}
           </Button>
         ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent activity</CardTitle>
-          <CardDescription>Compact observability view with strategy, latency and fallback metadata.</CardDescription>
+          <CardTitle>{pickLocale(locale, { ru: "Последняя активность", en: "Recent activity" })}</CardTitle>
+          <CardDescription>
+            {pickLocale(locale, {
+              ru: "Компактный observability-вид со стратегией, задержкой и fallback-метаданными.",
+              en: "Compact observability view with strategy, latency and fallback metadata."
+            })}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {items.map((item) => (
@@ -81,24 +105,44 @@ export default function LogsPage() {
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{formatTimestamp(item.timestamp)}</div>
               </div>
               <div className="space-y-2">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Routing</div>
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                  {pickLocale(locale, { ru: "Маршрутизация", en: "Routing" })}
+                </div>
                 <div className="text-sm text-foreground">
                   {item.attemptedProvider} {"->"} {item.finalProvider}
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Status</div>
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                  {pickLocale(locale, { ru: "Статус", en: "Status" })}
+                </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={item.fallbackActivated ? "warning" : "success"}>{item.status}</Badge>
+                  <Badge variant={item.fallbackActivated ? "warning" : "success"}>
+                    {pickLocale(locale, {
+                      ru:
+                        item.status === "success"
+                          ? "успех"
+                          : item.status === "fallback"
+                            ? "fallback"
+                            : item.status === "streaming"
+                              ? "стриминг"
+                              : "ошибка",
+                      en: item.status
+                    })}
+                  </Badge>
                   <ProviderStatusPill status={item.degradedMode ? "degraded" : "live"} />
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Duration</div>
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                  {pickLocale(locale, { ru: "Длительность", en: "Duration" })}
+                </div>
                 <div className="text-sm text-foreground">{formatDuration(item.durationMs)}</div>
               </div>
               <div className="space-y-2">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Strategy</div>
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                  {pickLocale(locale, { ru: "Стратегия", en: "Strategy" })}
+                </div>
                 <div className="text-sm text-foreground">{item.strategy}</div>
               </div>
             </div>

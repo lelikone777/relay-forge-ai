@@ -1,6 +1,12 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function BrandMark({ className }: { className?: string }) {
+  const { locale } = useI18n();
+
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-accent/25 bg-panel/80 shadow-glow">
@@ -9,9 +15,13 @@ export function BrandMark({ className }: { className?: string }) {
       </div>
       <div>
         <div className="font-display text-sm font-semibold tracking-tight text-foreground">RelayForge AI</div>
-        <div className="text-xs text-muted-foreground">Unified AI Gateway</div>
+        <div className="text-xs text-muted-foreground">
+          {pickLocale(locale, {
+            ru: "Единый AI Gateway",
+            en: "Unified AI Gateway"
+          })}
+        </div>
       </div>
     </div>
   );
 }
-

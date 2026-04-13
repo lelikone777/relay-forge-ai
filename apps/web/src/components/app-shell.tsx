@@ -7,24 +7,28 @@ import { useQuery } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { LanguageToggle } from "@/components/language-toggle";
 import { ModePill } from "@/components/status-pill";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { fetchProviderStatus } from "@/lib/api";
 import { appConfig } from "@/lib/config";
+import { pickLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/providers/i18n-provider";
 
 const navItems = [
-  { href: "/app/playground", label: "Playground", icon: PlaySquare },
-  { href: "/app/status", label: "Provider Status", icon: Activity },
-  { href: "/app/logs", label: "Logs", icon: Boxes },
-  { href: "/app/usage", label: "Usage", icon: ChartColumnBig },
-  { href: "/app/settings", label: "Settings", icon: Cog },
-  { href: "/docs", label: "Docs", icon: BookOpen }
+  { href: "/app/playground", label: { ru: "Песочница", en: "Playground" }, icon: PlaySquare },
+  { href: "/app/status", label: { ru: "Статус провайдеров", en: "Provider Status" }, icon: Activity },
+  { href: "/app/logs", label: { ru: "Логи", en: "Logs" }, icon: Boxes },
+  { href: "/app/usage", label: { ru: "Использование", en: "Usage" }, icon: ChartColumnBig },
+  { href: "/app/settings", label: { ru: "Настройки", en: "Settings" }, icon: Cog },
+  { href: "/docs", label: { ru: "Документация", en: "Docs" }, icon: BookOpen }
 ];
 
 export function AppShell({ children }: PropsWithChildren) {
+  const { locale } = useI18n();
   const pathname = usePathname();
   const { data } = useQuery({
     queryKey: ["provider-status"],
@@ -57,16 +61,25 @@ export function AppShell({ children }: PropsWithChildren) {
                   >
                     <span className="flex items-center gap-3">
                       <Icon className="h-4 w-4" />
-                      {item.label}
+                      {pickLocale(locale, item.label)}
                     </span>
                   </Link>
                 );
               })}
             </div>
             <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-              <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Workspace</div>
-              <div className="mt-2 font-display text-lg font-semibold">{appConfig.workspace}</div>
-              <div className="mt-2 text-sm text-muted-foreground">{appConfig.environment}</div>
+              <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                {pickLocale(locale, { ru: "Рабочая область", en: "Workspace" })}
+              </div>
+              <div className="mt-2 font-display text-lg font-semibold">
+                {pickLocale(locale, { ru: "Публичный Sandbox", en: appConfig.workspace })}
+              </div>
+              <div className="mt-2 text-sm text-muted-foreground">
+                {pickLocale(locale, {
+                  ru: "Cloudflare Pages + Workers",
+                  en: appConfig.environment
+                })}
+              </div>
             </div>
           </div>
         </Card>
@@ -75,18 +88,24 @@ export function AppShell({ children }: PropsWithChildren) {
         <Card className="p-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">System mode</div>
+              <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                {pickLocale(locale, { ru: "Режим системы", en: "System mode" })}
+              </div>
               <div className="mt-2 flex items-center gap-3">
                 <ModePill mode={mode} />
                 <span className="text-sm text-muted-foreground">
-                  Free-tier routing with automatic fallback and demo-safe reliability.
+                  {pickLocale(locale, {
+                    ru: "Free-tier маршрутизация с автоматическим fallback и demo-safe надежностью.",
+                    en: "Free-tier routing with automatic fallback and demo-safe reliability."
+                  })}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <LanguageToggle />
               <ThemeToggle />
               <Button asChild variant="secondary">
-                <Link href="/">Marketing Site</Link>
+                <Link href="/">{pickLocale(locale, { ru: "Маркетинговый сайт", en: "Marketing Site" })}</Link>
               </Button>
             </div>
           </div>

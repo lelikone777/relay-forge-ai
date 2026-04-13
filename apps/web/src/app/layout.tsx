@@ -24,16 +24,15 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "RelayForge AI",
-  description: "Unified AI gateway playground on free-tier infrastructure."
+  description: "Единый AI gateway playground на free-tier инфраструктуре."
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <body className={`${sans.variable} ${display.variable} ${mono.variable}`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
 }
-

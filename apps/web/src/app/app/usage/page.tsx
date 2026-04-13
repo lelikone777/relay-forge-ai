@@ -13,8 +13,11 @@ import { PageSkeleton } from "@/components/states/page-skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchUsage } from "@/lib/api";
 import { formatDuration, formatNumber } from "@/lib/format";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 export default function UsagePage() {
+  const { locale } = useI18n();
   const { data, isLoading, refetch, isError } = useQuery({
     queryKey: ["usage"],
     queryFn: fetchUsage
@@ -27,8 +30,11 @@ export default function UsagePage() {
   if (isError || !data) {
     return (
       <InlineError
-        title="Usage unavailable"
-        description="Analytics could not be loaded from the gateway."
+        title={pickLocale(locale, { ru: "Использование недоступно", en: "Usage unavailable" })}
+        description={pickLocale(locale, {
+          ru: "Не удалось загрузить аналитику из gateway.",
+          en: "Analytics could not be loaded from the gateway."
+        })}
         onRetry={() => void refetch()}
       />
     );
@@ -37,35 +43,44 @@ export default function UsagePage() {
   return (
     <div className="space-y-8">
       <PageIntro
-        eyebrow="Analytics"
-        title="Track volume, latency and provider distribution"
-        description="Usage views are structured like a lightweight observability product: enough telemetry to explain architecture and fallback impact at a glance."
+        eyebrow={pickLocale(locale, { ru: "Аналитика", en: "Analytics" })}
+        title={pickLocale(locale, {
+          ru: "Отслеживайте объем, задержку и распределение провайдеров",
+          en: "Track volume, latency and provider distribution"
+        })}
+        description={pickLocale(locale, {
+          ru: "Страница использования собрана как lightweight-observability продукт: достаточно телеметрии, чтобы быстро объяснить архитектуру и влияние fallback.",
+          en: "Usage views are structured like a lightweight observability product: enough telemetry to explain architecture and fallback impact at a glance."
+        })}
         actions={<ModePill mode={data.data.mode} />}
       />
 
       <div className="grid gap-4 lg:grid-cols-4">
         <MetricCard
-          label="Total requests"
+          label={pickLocale(locale, { ru: "Всего запросов", en: "Total requests" })}
           value={formatNumber(data.data.totals.requests)}
-          hint="Traffic handled by the Worker."
+          hint={pickLocale(locale, { ru: "Трафик, обработанный Worker.", en: "Traffic handled by the Worker." })}
           icon={<Activity className="h-5 w-5" />}
         />
         <MetricCard
-          label="Successful"
+          label={pickLocale(locale, { ru: "Успешные", en: "Successful" })}
           value={formatNumber(data.data.totals.successful)}
-          hint="Requests completed without UI failure."
+          hint={pickLocale(locale, { ru: "Запросы завершены без UI-сбоев.", en: "Requests completed without UI failure." })}
           icon={<Waves className="h-5 w-5" />}
         />
         <MetricCard
-          label="Fallbacks"
+          label={pickLocale(locale, { ru: "Fallback", en: "Fallbacks" })}
           value={formatNumber(data.data.totals.fallbackActivations)}
-          hint="Provider promotions triggered by orchestration."
+          hint={pickLocale(locale, {
+            ru: "Переключения провайдера, вызванные оркестрацией.",
+            en: "Provider promotions triggered by orchestration."
+          })}
           icon={<ArrowRightLeft className="h-5 w-5" />}
         />
         <MetricCard
-          label="Avg latency"
+          label={pickLocale(locale, { ru: "Средняя задержка", en: "Avg latency" })}
           value={formatDuration(data.data.totals.avgLatencyMs)}
-          hint="Across all completed requests."
+          hint={pickLocale(locale, { ru: "По всем завершенным запросам.", en: "Across all completed requests." })}
           icon={<Clock3 className="h-5 w-5" />}
         />
       </div>
@@ -73,8 +88,8 @@ export default function UsagePage() {
       <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Requests and latency</CardTitle>
-            <CardDescription>Volume alongside latency drift over time.</CardDescription>
+            <CardTitle>{pickLocale(locale, { ru: "Запросы и задержка", en: "Requests and latency" })}</CardTitle>
+            <CardDescription>{pickLocale(locale, { ru: "Объем и изменение задержки во времени.", en: "Volume alongside latency drift over time." })}</CardDescription>
           </CardHeader>
           <CardContent>
             <UsageLatencyChart data={data.data.timeseries} />
@@ -82,8 +97,10 @@ export default function UsagePage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Provider share</CardTitle>
-            <CardDescription>Final provider distribution after fallback.</CardDescription>
+            <CardTitle>{pickLocale(locale, { ru: "Доля провайдеров", en: "Provider share" })}</CardTitle>
+            <CardDescription>
+              {pickLocale(locale, { ru: "Финальное распределение провайдеров после fallback.", en: "Final provider distribution after fallback." })}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <ProviderDistributionChart data={data.data.providerDistribution} />
@@ -101,4 +118,3 @@ export default function UsagePage() {
     </div>
   );
 }
-

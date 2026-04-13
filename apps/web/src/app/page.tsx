@@ -7,7 +7,6 @@ import {
   ChartNoAxesCombined,
   CloudCog,
   Cpu,
-  Globe2,
   Layers3,
   ShieldCheck,
   Sparkles,
@@ -21,6 +20,8 @@ import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 const fadeIn = {
   initial: { opacity: 0, y: 18 },
@@ -29,79 +30,112 @@ const fadeIn = {
   transition: { duration: 0.45 }
 };
 
-const featureCards = [
-  {
-    title: "Unified AI API surface",
-    description: "Send prompts through one consistent request shape while RelayForge normalizes provider-specific behavior.",
-    icon: Layers3
-  },
-  {
-    title: "Real-time streaming",
-    description: "Progressive token rendering over SSE-compatible streams with stable layout and clean interruption handling.",
-    icon: Waves
-  },
-  {
-    title: "Automatic fallback",
-    description: "Groq Free is preferred, OpenRouter free models take over when needed, and mock mode guarantees a working public demo.",
-    icon: ArrowRight
-  },
-  {
-    title: "Normalized errors",
-    description: "Validation, rate-limit, timeout and upstream-shape failures are returned through one coherent contract.",
-    icon: ShieldCheck
-  },
-  {
-    title: "Provider visibility",
-    description: "Expose routing order, current mode, latency and provider readiness in a dashboard that feels operational, not decorative.",
-    icon: Activity
-  },
-  {
-    title: "Free-tier-first architecture",
-    description: "Static Pages frontend plus Worker API keeps deployment public, cheap and resilient under constrained quotas.",
-    icon: CloudCog
-  }
-];
-
-const providerCards = [
-  {
-    title: "Groq Free",
-    subtitle: "Primary path",
-    detail: "Low-latency default for the best real-time UX.",
-    badge: "primary"
-  },
-  {
-    title: "OpenRouter Free",
-    subtitle: "Fallback tier",
-    detail: "Activated when Groq is rate-limited, unavailable or malformed.",
-    badge: "secondary"
-  },
-  {
-    title: "Mock / Demo",
-    subtitle: "Safety net",
-    detail: "Pseudo-streaming provider that guarantees the public demo remains testable.",
-    badge: "demo"
-  }
-];
-
-const workflowCards = [
-  {
-    title: "How it works",
-    description: "1. Validate and normalize the request.",
-    icon: Cpu
-  },
-  {
-    title: "Streaming path",
-    description: "2. Open a provider stream and surface tokens progressively.",
-    icon: Waves
-  },
-  {
-    title: "Resilience path",
-    description: "3. Promote to the next tier when the upstream path fails cleanly.",
-    icon: ShieldCheck
-  }
-];
-
 export default function HomePage() {
+  const { locale } = useI18n();
+  const t = (ru: string, en: string) => pickLocale(locale, { ru, en });
+
+  const featureCards = [
+    {
+      title: t("Единая AI API-поверхность", "Unified AI API surface"),
+      description: t(
+        "Отправляйте промпты в едином формате запроса, а RelayForge нормализует поведение разных провайдеров.",
+        "Send prompts through one consistent request shape while RelayForge normalizes provider-specific behavior."
+      ),
+      icon: Layers3
+    },
+    {
+      title: t("Стриминг в реальном времени", "Real-time streaming"),
+      description: t(
+        "Постепенная отрисовка токенов через SSE-совместимые стримы со стабильным layout и аккуратной обработкой прерываний.",
+        "Progressive token rendering over SSE-compatible streams with stable layout and clean interruption handling."
+      ),
+      icon: Waves
+    },
+    {
+      title: t("Автоматический fallback", "Automatic fallback"),
+      description: t(
+        "Основной путь: Groq Free. При проблемах включаются free-модели OpenRouter, а mock-режим гарантирует рабочее публичное демо.",
+        "Groq Free is preferred, OpenRouter free models take over when needed, and mock mode guarantees a working public demo."
+      ),
+      icon: ArrowRight
+    },
+    {
+      title: t("Нормализованные ошибки", "Normalized errors"),
+      description: t(
+        "Ошибки валидации, rate-limit, timeout и некорректный upstream-ответ возвращаются в едином контракте.",
+        "Validation, rate-limit, timeout and upstream-shape failures are returned through one coherent contract."
+      ),
+      icon: ShieldCheck
+    },
+    {
+      title: t("Видимость провайдеров", "Provider visibility"),
+      description: t(
+        "Показывайте порядок маршрутизации, режим системы, задержку и готовность провайдеров в observability-стиле.",
+        "Expose routing order, current mode, latency and provider readiness in a dashboard that feels operational, not decorative."
+      ),
+      icon: Activity
+    },
+    {
+      title: t("Архитектура free-tier-first", "Free-tier-first architecture"),
+      description: t(
+        "Статический frontend на Pages и API на Worker дают публичный, дешевый и устойчивый деплой при ограниченных квотах.",
+        "Static Pages frontend plus Worker API keeps deployment public, cheap and resilient under constrained quotas."
+      ),
+      icon: CloudCog
+    }
+  ];
+
+  const providerCards = [
+    {
+      title: "Groq Free",
+      subtitle: t("Основной путь", "Primary path"),
+      detail: t("Низкая задержка по умолчанию для лучшего real-time UX.", "Low-latency default for the best real-time UX."),
+      badge: "primary"
+    },
+    {
+      title: "OpenRouter Free",
+      subtitle: t("Fallback-уровень", "Fallback tier"),
+      detail: t(
+        "Включается, когда Groq ограничен, временно недоступен или возвращает некорректный ответ.",
+        "Activated when Groq is rate-limited, unavailable or malformed."
+      ),
+      badge: "secondary"
+    },
+    {
+      title: "Mock / Demo",
+      subtitle: t("Страховочный слой", "Safety net"),
+      detail: t(
+        "Псевдо-стриминг, который гарантирует тестируемость публичного демо.",
+        "Pseudo-streaming provider that guarantees the public demo remains testable."
+      ),
+      badge: "demo"
+    }
+  ];
+
+  const workflowCards = [
+    {
+      title: t("Как это работает", "How it works"),
+      description: t("1. Валидация и нормализация запроса.", "1. Validate and normalize the request."),
+      icon: Cpu
+    },
+    {
+      title: t("Стриминг-путь", "Streaming path"),
+      description: t(
+        "2. Открывается provider-stream и токены отдаются постепенно.",
+        "2. Open a provider stream and surface tokens progressively."
+      ),
+      icon: Waves
+    },
+    {
+      title: t("Resilience-путь", "Resilience path"),
+      description: t(
+        "3. При ошибке upstream запрос поднимается на следующий уровень.",
+        "3. Promote to the next tier when the upstream path fails cleanly."
+      ),
+      icon: ShieldCheck
+    }
+  ];
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -110,33 +144,40 @@ export default function HomePage() {
         <section className="relative overflow-hidden border-b border-border/60">
           <div className="shell-container section-space grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
             <motion.div {...fadeIn} className="space-y-8">
-              <Badge variant="accent">Unified AI Gateway on Free-Tier Infrastructure</Badge>
+              <Badge variant="accent">{t("Unified AI Gateway на Free-Tier Infrastructure", "Unified AI Gateway on Free-Tier Infrastructure")}</Badge>
               <div className="space-y-6">
                 <h1 className="font-display text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-                  RelayForge AI routes, streams and recovers like a real AI infrastructure product.
+                  {t(
+                    "RelayForge AI маршрутизирует, стримит и восстанавливается как реальный AI infrastructure продукт.",
+                    "RelayForge AI routes, streams and recovers like a real AI infrastructure product."
+                  )}
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
-                  One API surface, multiple providers, normalized errors and resilient fallback from Groq Free to
-                  OpenRouter free models to a demo-safe mock provider.
+                  {t(
+                    "Одна API-поверхность, несколько провайдеров, нормализованные ошибки и устойчивый fallback от Groq Free к OpenRouter Free и далее к demo-safe mock-провайдеру.",
+                    "One API surface, multiple providers, normalized errors and resilient fallback from Groq Free to OpenRouter free models to a demo-safe mock provider."
+                  )}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
                   <Link href="/app/playground">
-                    Open Playground
+                    {t("Открыть песочницу", "Open Playground")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/docs">View API Docs</Link>
+                  <Link href="/docs">{t("Открыть API docs", "View API Docs")}</Link>
                 </Button>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 <Card>
                   <CardContent className="p-5">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Streaming</div>
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Стриминг", "Streaming")}</div>
                     <div className="mt-3 font-display text-3xl font-semibold">SSE</div>
-                    <div className="mt-2 text-sm text-muted-foreground">Progressive token delivery with stable UX.</div>
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      {t("Постепенная выдача токенов со стабильным UX.", "Progressive token delivery with stable UX.")}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -148,8 +189,8 @@ export default function HomePage() {
                 </Card>
                 <Card>
                   <CardContent className="p-5">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Deploy</div>
-                    <div className="mt-3 font-display text-3xl font-semibold">Public</div>
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Деплой", "Deploy")}</div>
+                    <div className="mt-3 font-display text-3xl font-semibold">{t("Публично", "Public")}</div>
                     <div className="mt-2 text-sm text-muted-foreground">Cloudflare Pages + Workers.</div>
                   </CardContent>
                 </Card>
@@ -162,16 +203,21 @@ export default function HomePage() {
                 <CardHeader className="relative border-b border-border/70">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <CardTitle>Gateway preview</CardTitle>
-                      <CardDescription>Commercial-grade playground UI with routing visibility.</CardDescription>
+                      <CardTitle>{t("Превью gateway", "Gateway preview")}</CardTitle>
+                      <CardDescription>
+                        {t(
+                          "Playground UI коммерческого уровня с видимостью маршрутизации.",
+                          "Commercial-grade playground UI with routing visibility."
+                        )}
+                      </CardDescription>
                     </div>
-                    <Badge variant="accent">live orchestration</Badge>
+                    <Badge variant="accent">{t("live оркестрация", "live orchestration")}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="relative grid gap-4 p-6">
                   <div className="rounded-3xl border border-border/70 bg-background/80 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <div className="text-sm font-medium">Request flow</div>
+                      <div className="text-sm font-medium">{t("Поток запроса", "Request flow")}</div>
                       <Badge>auto</Badge>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
@@ -194,17 +240,17 @@ export default function HomePage() {
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-3xl border border-border/70 bg-background/70 p-5">
-                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Latency</div>
+                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Задержка", "Latency")}</div>
                       <div className="mt-3 flex items-center gap-3">
                         <Zap className="h-5 w-5 text-accent" />
                         <span className="font-display text-2xl font-semibold">428 ms</span>
                       </div>
                     </div>
                     <div className="rounded-3xl border border-border/70 bg-background/70 p-5">
-                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Mode</div>
+                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Режим", "Mode")}</div>
                       <div className="mt-3 flex items-center gap-3">
                         <Sparkles className="h-5 w-5 text-secondary" />
-                        <span className="font-display text-2xl font-semibold">Degraded</span>
+                        <span className="font-display text-2xl font-semibold">{t("Деградация", "Degraded")}</span>
                       </div>
                     </div>
                   </div>
@@ -216,49 +262,56 @@ export default function HomePage() {
 
         <section className="shell-container py-8">
           <div className="grid gap-3 rounded-3xl border border-border/60 bg-panel/50 p-4 text-xs uppercase tracking-[0.22em] text-muted-foreground sm:grid-cols-4 sm:text-sm">
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">Cloudflare Workers runtime</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">Groq Free primary path</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">OpenRouter free fallback</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">Mock demo guarantee</div>
+            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Runtime Cloudflare Workers", "Cloudflare Workers runtime")}</div>
+            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Основной путь Groq Free", "Groq Free primary path")}</div>
+            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Fallback на OpenRouter Free", "OpenRouter free fallback")}</div>
+            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Гарантия демо через mock", "Mock demo guarantee")}</div>
           </div>
         </section>
 
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
             <div className="space-y-4">
-              <div className="eyebrow">Product Preview</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">A premium dashboard UI built for screenshots and interviews.</h2>
+              <div className="eyebrow">{t("Превью Продукта", "Product Preview")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance">
+                {t(
+                  "Премиальный dashboard UI для скриншотов и интервью.",
+                  "A premium dashboard UI built for screenshots and interviews."
+                )}
+              </h2>
               <p className="text-lg leading-8 text-muted-foreground">
-                The product surface combines streaming UX, provider health visibility and observability-style analytics
-                into one credible developer infrastructure demo.
+                {t(
+                  "Продуктовая поверхность объединяет streaming UX, статусы провайдеров и observability-аналитику в цельное демо developer-инфраструктуры.",
+                  "The product surface combines streaming UX, provider health visibility and observability-style analytics into one credible developer infrastructure demo."
+                )}
               </p>
             </div>
             <Card className="overflow-hidden">
               <CardContent className="grid gap-4 p-6 lg:grid-cols-[0.8fr_1.2fr]">
                 <div className="space-y-4 rounded-3xl border border-border/70 bg-background/75 p-5">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">Provider status</div>
-                    <Badge variant="accent">degraded</Badge>
+                    <div className="text-sm font-medium">{t("Статус провайдеров", "Provider status")}</div>
+                    <Badge variant="accent">{t("деградация", "degraded")}</Badge>
                   </div>
                   {["Groq Free", "OpenRouter Free", "Mock / Demo"].map((label, index) => (
                     <div key={label} className="flex items-center justify-between rounded-2xl border border-border/70 bg-panel/70 px-4 py-3">
                       <span className="text-sm">{label}</span>
                       <Badge variant={index === 0 ? "warning" : index === 1 ? "accent" : "success"}>
-                        {index === 0 ? "limited" : index === 1 ? "fallback" : "demo-ready"}
+                        {index === 0 ? t("ограничен", "limited") : index === 1 ? "fallback" : "demo-ready"}
                       </Badge>
                     </div>
                   ))}
                 </div>
                 <div className="space-y-4 rounded-3xl border border-border/70 bg-background/75 p-5">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">Usage telemetry</div>
-                    <Badge>observability</Badge>
+                    <div className="text-sm font-medium">{t("Телеметрия использования", "Usage telemetry")}</div>
+                    <Badge>{t("наблюдаемость", "observability")}</Badge>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-3">
                     {[
-                      ["Requests", "128"],
-                      ["Fallbacks", "19"],
-                      ["Avg latency", "544 ms"]
+                      [t("Запросы", "Requests"), "128"],
+                      ["Fallback", "19"],
+                      [t("Средняя задержка", "Avg latency"), "544 ms"]
                     ].map(([label, value]) => (
                       <div key={label} className="rounded-2xl border border-border/70 bg-panel/70 p-4">
                         <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{label}</div>
@@ -268,7 +321,7 @@ export default function HomePage() {
                   </div>
                   <div className="rounded-2xl border border-border/70 bg-panel/70 p-4">
                     <div className="mb-4 flex items-center justify-between">
-                      <div className="text-sm font-medium">Requests over time</div>
+                      <div className="text-sm font-medium">{t("Запросы по времени", "Requests over time")}</div>
                       <ChartNoAxesCombined className="h-4 w-4 text-accent" />
                     </div>
                     <div className="grid grid-cols-7 gap-2">
@@ -291,8 +344,10 @@ export default function HomePage() {
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="space-y-10">
             <div className="space-y-4 text-center">
-              <div className="eyebrow">Core Features</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">One interface, multiple providers, resilient by design.</h2>
+              <div className="eyebrow">{t("Ключевые Функции", "Core Features")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance">
+                {t("Один интерфейс, несколько провайдеров, устойчивость по дизайну.", "One interface, multiple providers, resilient by design.")}
+              </h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {featureCards.map((feature) => {
@@ -338,26 +393,39 @@ export default function HomePage() {
           <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[1fr_1fr]">
             <Card className="overflow-hidden">
               <CardHeader>
-                <CardTitle>Stream responses in real time</CardTitle>
-                <CardDescription>Keep the output panel alive with progressive tokens and a calm, stable layout.</CardDescription>
+                <CardTitle>{t("Стримьте ответы в реальном времени", "Stream responses in real time")}</CardTitle>
+                <CardDescription>
+                  {t(
+                    "Держите output-панель активной с прогрессивной выдачей токенов и стабильной версткой.",
+                    "Keep the output panel alive with progressive tokens and a calm, stable layout."
+                  )}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="rounded-3xl border border-border/70 bg-background/80 p-5 font-mono text-sm leading-7 text-foreground">
-                  RelayForge streams partial output while tracking provider metadata in parallel.
+                  {t(
+                    "RelayForge стримит частичный вывод параллельно с трекингом provider-метаданных.",
+                    "RelayForge streams partial output while tracking provider metadata in parallel."
+                  )}
                   <span className="animate-blink">|</span>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Fallback without drama</CardTitle>
-                <CardDescription>Routing stays explicit: users always know what was attempted and what actually served the response.</CardDescription>
+                <CardTitle>{t("Fallback без драмы", "Fallback without drama")}</CardTitle>
+                <CardDescription>
+                  {t(
+                    "Маршрутизация остается явной: пользователь видит, что пытались вызвать и кто реально отдал ответ.",
+                    "Routing stays explicit: users always know what was attempted and what actually served the response."
+                  )}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  "timeout -> promote to OpenRouter",
-                  "rate limit -> preserve UX and retry downstream",
-                  "quota exhaustion -> switch into demo-ready mock mode"
+                  t("timeout -> переход на OpenRouter", "timeout -> promote to OpenRouter"),
+                  t("rate limit -> сохранение UX и retry ниже по цепочке", "rate limit -> preserve UX and retry downstream"),
+                  t("исчерпание квоты -> переключение в demo-ready mock mode", "quota exhaustion -> switch into demo-ready mock mode")
                 ].map((item) => (
                   <div key={item} className="rounded-2xl border border-border/70 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
                     {item}
@@ -371,8 +439,10 @@ export default function HomePage() {
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="space-y-10">
             <div className="space-y-4">
-              <div className="eyebrow">Provider Routing</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">Designed for free-tier constraints, not in spite of them.</h2>
+              <div className="eyebrow">{t("Маршрутизация Провайдеров", "Provider Routing")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance">
+                {t("Спроектировано под free-tier ограничения, а не вопреки им.", "Designed for free-tier constraints, not in spite of them.")}
+              </h2>
             </div>
             <div className="grid gap-4 lg:grid-cols-3">
               {providerCards.map((provider) => (
@@ -395,20 +465,24 @@ export default function HomePage() {
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="space-y-4">
-              <div className="eyebrow">Free-Tier Architecture</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">Static frontend. Serverless gateway. Secrets only on the edge.</h2>
+              <div className="eyebrow">{t("Free-Tier Архитектура", "Free-Tier Architecture")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance">
+                {t("Статический frontend. Serverless gateway. Секреты только на edge.", "Static frontend. Serverless gateway. Secrets only on the edge.")}
+              </h2>
               <p className="text-lg leading-8 text-muted-foreground">
-                Cloudflare Pages hosts the premium UI as a static export. Cloudflare Workers handle provider orchestration,
-                streaming, normalized errors and telemetry without introducing paid backend infrastructure.
+                {t(
+                  "Cloudflare Pages хостит премиальный UI как статический export. Cloudflare Workers обрабатывают оркестрацию провайдеров, стриминг, нормализованные ошибки и телеметрию без платной backend-инфраструктуры.",
+                  "Cloudflare Pages hosts the premium UI as a static export. Cloudflare Workers handle provider orchestration, streaming, normalized errors and telemetry without introducing paid backend infrastructure."
+                )}
               </p>
             </div>
             <Card>
               <CardContent className="grid gap-4 p-6 md:grid-cols-2">
                 {[
-                  ["Frontend", "Next.js + Tailwind + TanStack Query + Recharts"],
-                  ["Backend", "Cloudflare Worker with modular provider adapters"],
-                  ["Contracts", "Shared Zod schemas and typed response shapes"],
-                  ["Reliability", "Demo-safe mock mode for public availability"]
+                  [t("Frontend", "Frontend"), "Next.js + Tailwind + TanStack Query + Recharts"],
+                  [t("Backend", "Backend"), t("Cloudflare Worker с модульными provider-адаптерами", "Cloudflare Worker with modular provider adapters")],
+                  [t("Контракты", "Contracts"), t("Общие Zod-схемы и типизированные response-shape", "Shared Zod schemas and typed response shapes")],
+                  [t("Надежность", "Reliability"), t("Demo-safe mock mode для публичной доступности", "Demo-safe mock mode for public availability")]
                 ].map(([label, value]) => (
                   <div key={label} className="rounded-2xl border border-border/70 bg-background/70 p-4">
                     <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{label}</div>
@@ -425,24 +499,26 @@ export default function HomePage() {
             <Card className="overflow-hidden">
               <CardContent className="grid gap-8 p-8 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div className="space-y-4">
-                  <div className="eyebrow">Ready to explore</div>
+                  <div className="eyebrow">{t("Готово к исследованию", "Ready to explore")}</div>
                   <h2 className="font-display text-4xl font-semibold text-balance">
-                    A portfolio project that behaves like a real AI infra product.
+                    {t("Портфолио-проект, который ведет себя как реальный AI infra продукт.", "A portfolio project that behaves like a real AI infra product.")}
                   </h2>
                   <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
-                    Open the playground, inspect provider routing, review the docs and use the dashboard as a concrete
-                    architecture walkthrough in interviews.
+                    {t(
+                      "Откройте песочницу, проверьте маршрутизацию провайдеров, изучите docs и используйте dashboard как практический архитектурный walkthrough на интервью.",
+                      "Open the playground, inspect provider routing, review the docs and use the dashboard as a concrete architecture walkthrough in interviews."
+                    )}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="lg">
                     <Link href="/app/playground">
-                      Launch demo
+                      {t("Запустить демо", "Launch demo")}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="secondary">
-                    <Link href="/docs">Read docs</Link>
+                    <Link href="/docs">{t("Читать docs", "Read docs")}</Link>
                   </Button>
                 </div>
               </CardContent>

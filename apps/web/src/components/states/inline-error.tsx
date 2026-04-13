@@ -1,7 +1,11 @@
+"use client";
+
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function InlineError({
   title,
@@ -12,6 +16,8 @@ export function InlineError({
   description: string;
   onRetry?: () => void;
 }) {
+  const { locale } = useI18n();
+
   return (
     <Card className="border-danger/20">
       <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -27,11 +33,10 @@ export function InlineError({
         {onRetry ? (
           <Button onClick={onRetry} variant="secondary">
             <RefreshCw className="h-4 w-4" />
-            Retry
+            {pickLocale(locale, { ru: "Повторить", en: "Retry" })}
           </Button>
         ) : null}
       </CardContent>
     </Card>
   );
 }
-

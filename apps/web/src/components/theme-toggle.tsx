@@ -5,8 +5,11 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { pickLocale } from "@/lib/i18n";
+import { useI18n } from "@/providers/i18n-provider";
 
 export function ThemeToggle() {
+  const { locale } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -22,7 +25,7 @@ export function ThemeToggle() {
 
   return (
     <Button
-      aria-label="Toggle theme"
+      aria-label={pickLocale(locale, { ru: "Переключить тему", en: "Toggle theme" })}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       size="icon"
       variant="secondary"
@@ -31,4 +34,3 @@ export function ThemeToggle() {
     </Button>
   );
 }
-
