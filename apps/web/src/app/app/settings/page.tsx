@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { appConfig } from "@/lib/config";
+import { appConfig, getApiBaseUrl } from "@/lib/config";
 import { pickLocale } from "@/lib/i18n";
 import { useI18n } from "@/providers/i18n-provider";
 import { useSettings } from "@/providers/settings-provider";
@@ -18,6 +18,7 @@ const strategies = ["auto", "groq", "openrouter", "mock"] as const;
 export default function SettingsPage() {
   const { locale } = useI18n();
   const { resolvedTheme } = useTheme();
+  const apiBaseUrl = getApiBaseUrl();
   const {
     defaultStrategy,
     streamingEnabled,
@@ -153,7 +154,7 @@ export default function SettingsPage() {
             <CardTitle>{pickLocale(locale, { ru: "Базовый URL API", en: "API base URL" })}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <div className="font-mono text-xs text-foreground break-all">{appConfig.apiBaseUrl}</div>
+            <div className="font-mono text-xs text-foreground break-all">{apiBaseUrl}</div>
             <div>
               {pickLocale(locale, {
                 ru: "Вставляется на этапе сборки через `NEXT_PUBLIC_API_BASE_URL`.",

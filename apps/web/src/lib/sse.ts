@@ -1,6 +1,6 @@
 import type { ChatRequest, ErrorResponse, ResponseMeta } from "@relayforge/shared";
 
-import { appConfig } from "@/lib/config";
+import { getApiBaseUrl } from "@/lib/config";
 
 export type StreamEvent =
   | { type: "token"; value: string }
@@ -56,7 +56,8 @@ export async function streamRelayResponse(
   signal: AbortSignal,
   onEvent: (event: StreamEvent) => void
 ) {
-  const response = await fetch(`${appConfig.apiBaseUrl}/api/v1/stream`, {
+  const apiBaseUrl = getApiBaseUrl();
+  const response = await fetch(`${apiBaseUrl}/api/v1/stream`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -68,7 +69,7 @@ export async function streamRelayResponse(
   if (!response.ok || !response.body) {
     const technicalDetails = await response.text().catch(() => "");
 
-    throw new StreamRequestError(`Streaming request failed with ${response.status}`, {
+    throw new StreamRequestError(`Streaming request failed with ${response.status} at ${apiBaseUrl}/api/v1/stream`, {
       status: response.status,
       technicalDetails
     });

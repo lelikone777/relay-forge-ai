@@ -3,7 +3,7 @@
 import type { ChatRequest, LogsResponse, ProviderStatusResponse, SuccessResponse, UsageResponse } from "@relayforge/shared";
 
 import { demoLogs, demoProviderStatus, demoUsage } from "@/lib/demo-data";
-import { appConfig } from "@/lib/config";
+import { getApiBaseUrl } from "@/lib/config";
 
 const jsonHeaders = {
   "Content-Type": "application/json"
@@ -30,24 +30,23 @@ async function withDemoFallback<T>(request: () => Promise<T>, fallback: T) {
 
 export function fetchProviderStatus() {
   return withDemoFallback(
-    () => safeJson<ProviderStatusResponse>(`${appConfig.apiBaseUrl}/api/v1/providers/status`),
+    () => safeJson<ProviderStatusResponse>(`${getApiBaseUrl()}/api/v1/providers/status`),
     demoProviderStatus
   );
 }
 
 export function fetchLogs() {
-  return withDemoFallback(() => safeJson<LogsResponse>(`${appConfig.apiBaseUrl}/api/v1/logs`), demoLogs);
+  return withDemoFallback(() => safeJson<LogsResponse>(`${getApiBaseUrl()}/api/v1/logs`), demoLogs);
 }
 
 export function fetchUsage() {
-  return withDemoFallback(() => safeJson<UsageResponse>(`${appConfig.apiBaseUrl}/api/v1/usage`), demoUsage);
+  return withDemoFallback(() => safeJson<UsageResponse>(`${getApiBaseUrl()}/api/v1/usage`), demoUsage);
 }
 
 export async function postChat(body: ChatRequest) {
-  return safeJson<SuccessResponse>(`${appConfig.apiBaseUrl}/api/v1/chat`, {
+  return safeJson<SuccessResponse>(`${getApiBaseUrl()}/api/v1/chat`, {
     method: "POST",
     headers: jsonHeaders,
     body: JSON.stringify(body)
   });
 }
-
