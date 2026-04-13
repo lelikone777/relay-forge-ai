@@ -98,6 +98,16 @@ export async function requestOpenAiCompatible({
         });
       }
 
+      if (response.status === 401 || response.status === 403) {
+        throw new RelayError({
+          code: "provider_unavailable",
+          message: `${provider} authentication failed or the provider is not available for this credential.`,
+          provider,
+          technicalDetails: details,
+          status: 503
+        });
+      }
+
       if (response.status >= 500) {
         throw new RelayError({
           code: "provider_unavailable",

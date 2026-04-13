@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 
 import type { ChatRequest, ErrorResponse, ResponseMeta, StrategyId } from "@relayforge/shared";
 
-import { postChat } from "@/lib/api";
+import { ApiRequestError, postChat } from "@/lib/api";
 import { StreamRequestError, streamRelayResponse } from "@/lib/sse";
 
 type UiError = ErrorResponse["error"];
@@ -20,6 +20,14 @@ const defaultError = (message: string): UiError => ({
   message,
   timestamp: new Date().toISOString()
 });
+
+const toUiError = (cause: unknown, fallbackMessage: string): UiError => {
+  if (cause instanceof ApiRequestError && cause.payload?.error) {
+    return cause.payload.error;
+  }
+
+  return defaultError(cause instanceof Error ? cause.message : fallbackMessage);
+};
 
 async function fallbackToChat(body: ChatRequest) {
   return postChat({
@@ -68,7 +76,7 @@ export function usePlayground() {
         setResponseText(response.data.text);
         setResponseMeta(response.data.meta);
       } catch (cause) {
-        setError(defaultError(cause instanceof Error ? cause.message : "Request failed."));
+        setError(toUiError(cause, "Request failed."));
       }
 
       return;
@@ -109,6 +117,11 @@ export function usePlayground() {
           setResponseMeta(response.data.meta);
           setError(null);
         } catch (fallbackCause) {
+          if (fallbackCause instanceof ApiRequestError && fallbackCause.payload?.error) {
+            setError(fallbackCause.payload.error);
+            return;
+          }
+
           const streamMessage = cause instanceof Error ? cause.message : "Streaming failed.";
           const fallbackMessage = fallbackCause instanceof Error ? fallbackCause.message : "Fallback request failed.";
           const technicalDetails =
