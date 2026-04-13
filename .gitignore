@@ -5,6 +5,10 @@ dist
 .wrangler
 .DS_Store
 coverage
+.env
+apps/web/.env.local
+apps/worker/.dev.vars
+.idea
 apps/web/.vercel
 apps/web/.next
 apps/web/out
