@@ -104,7 +104,7 @@ export default function PlaygroundPage() {
         }
       />
 
-      <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,1fr)]">
         <Card className="overflow-hidden">
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -255,7 +255,7 @@ export default function PlaygroundPage() {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{pickLocale(locale, { ru: "Метаданные запроса", en: "Request metadata" })}</CardTitle>
