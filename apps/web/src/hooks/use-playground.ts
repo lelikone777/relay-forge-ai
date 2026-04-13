@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import type { ChatRequest, ErrorResponse, ResponseMeta, StrategyId } from "@relayforge/shared";
 
 import { postChat } from "@/lib/api";
-import { streamRelayResponse } from "@/lib/sse";
+import { StreamRequestError, streamRelayResponse } from "@/lib/sse";
 
 type UiError = ErrorResponse["error"];
 
@@ -20,6 +20,16 @@ const defaultError = (message: string): UiError => ({
   message,
   timestamp: new Date().toISOString()
 });
+
+async function fallbackToChat(body: ChatRequest) {
+  return postChat({
+    ...body,
+    options: {
+      ...body.options,
+      stream: false
+    }
+  });
+}
 
 export function usePlayground() {
   const [responseText, setResponseText] = useState("");
@@ -93,7 +103,23 @@ export function usePlayground() {
           timestamp: new Date().toISOString()
         });
       } else {
-        setError(defaultError(cause instanceof Error ? cause.message : "Streaming failed."));
+        try {
+          const response = await fallbackToChat(body);
+          setResponseText(response.data.text);
+          setResponseMeta(response.data.meta);
+          setError(null);
+        } catch (fallbackCause) {
+          const streamMessage = cause instanceof Error ? cause.message : "Streaming failed.";
+          const fallbackMessage = fallbackCause instanceof Error ? fallbackCause.message : "Fallback request failed.";
+          const technicalDetails =
+            cause instanceof StreamRequestError && cause.technicalDetails
+              ? ` Stream endpoint details: ${cause.technicalDetails}`
+              : "";
+
+          setError(
+            defaultError(`${streamMessage}. JSON fallback failed: ${fallbackMessage}.${technicalDetails}`.trim())
+          );
+        }
       }
     } finally {
       if (abortControllerRef.current === controller) {
@@ -137,4 +163,3 @@ export function usePlayground() {
     clear
   };
 }
-

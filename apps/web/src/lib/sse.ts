@@ -8,6 +8,18 @@ export type StreamEvent =
   | { type: "error"; value: ErrorResponse["error"] }
   | { type: "done" };
 
+export class StreamRequestError extends Error {
+  status?: number;
+  technicalDetails?: string;
+
+  constructor(message: string, options?: { status?: number; technicalDetails?: string }) {
+    super(message);
+    this.name = "StreamRequestError";
+    this.status = options?.status;
+    this.technicalDetails = options?.technicalDetails;
+  }
+}
+
 function parseEvent(raw: string): StreamEvent | null {
   const lines = raw.split("\n");
   const eventLine = lines.find((line) => line.startsWith("event:"));
@@ -54,7 +66,12 @@ export async function streamRelayResponse(
   });
 
   if (!response.ok || !response.body) {
-    throw new Error(`Streaming request failed with ${response.status}`);
+    const technicalDetails = await response.text().catch(() => "");
+
+    throw new StreamRequestError(`Streaming request failed with ${response.status}`, {
+      status: response.status,
+      technicalDetails
+    });
   }
 
   const reader = response.body.getReader();
@@ -81,4 +98,3 @@ export async function streamRelayResponse(
     }
   }
 }
-
