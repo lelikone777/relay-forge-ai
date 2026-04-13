@@ -161,7 +161,7 @@ Recommended Worker vars:
 
 The repo includes a production workflow at [deploy.yml](/C:/Users/lelik/WebstormProjects/relay-forge-ai/.github/workflows/deploy.yml).
 
-On every push to `main`, GitHub Actions will:
+On every push to `master`, GitHub Actions will:
 
 1. install dependencies and run type checks
 2. build the static frontend
