@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Gauge, LoaderCircle, RotateCcw, Send, Sparkles, Square } from "lucide-react";
+import { Gauge, LoaderCircle, RotateCcw, Send, Sparkles, Square } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { StrategyId } from "@relayforge/shared";
@@ -141,7 +141,7 @@ export default function PlaygroundPage() {
                 en: "Describe the response you want routed through RelayForge."
               })}
             />
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Режим", en: "Mode" })}
@@ -154,7 +154,7 @@ export default function PlaygroundPage() {
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Стриминг", en: "Streaming" })}
                 </div>
-                <div className="mt-2 text-sm text-foreground">
+                <div className="text-safe mt-2 text-sm text-foreground">
                   {streamingEnabled
                     ? pickLocale(locale, { ru: "Включен по умолчанию", en: "Enabled by default" })
                     : pickLocale(locale, { ru: "Отключен в настройках", en: "Disabled by preference" })}
@@ -164,15 +164,17 @@ export default function PlaygroundPage() {
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Порядок fallback", en: "Fallback order" })}
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                  Groq <ArrowRight className="h-3 w-3" /> OpenRouter <ArrowRight className="h-3 w-3" /> Mock
+                <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  <div>1. Groq</div>
+                  <div>2. OpenRouter</div>
+                  <div>3. Mock</div>
                 </div>
               </div>
               <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Публичное демо", en: "Public demo" })}
                 </div>
-                <div className="mt-2 text-sm text-foreground">
+                <div className="text-safe mt-2 text-sm text-foreground">
                   {pickLocale(locale, {
                     ru: "Всегда тестируется через mock fallback.",
                     en: "Always testable via mock fallback."
