@@ -6,11 +6,15 @@ import type { ProviderAdapter } from "./base";
 
 const endpoint = "https://api.groq.com/openai/v1/chat/completions";
 
+function getGroqApiKey(env: Env) {
+  return env.GROQ_API_KEY?.trim() ?? "";
+}
+
 export const groqProvider: ProviderAdapter = {
   id: "groq",
   label: "Groq Free",
   supportsStreaming: true,
-  isConfigured: (env) => Boolean(env.GROQ_API_KEY),
+  isConfigured: (env) => Boolean(getGroqApiKey(env)),
   getModel: (env) => env.GROQ_MODEL ?? "llama-3.1-8b-instant",
   async generate(request: ChatRequest, env: Env, signal) {
     const startedAt = Date.now();
@@ -19,7 +23,7 @@ export const groqProvider: ProviderAdapter = {
       provider: "groq",
       signal,
       headers: {
-        Authorization: `Bearer ${env.GROQ_API_KEY ?? ""}`
+        Authorization: `Bearer ${getGroqApiKey(env)}`
       },
       body: {
         model: env.GROQ_MODEL ?? "llama-3.1-8b-instant",
@@ -46,7 +50,7 @@ export const groqProvider: ProviderAdapter = {
       provider: "groq",
       signal,
       headers: {
-        Authorization: `Bearer ${env.GROQ_API_KEY ?? ""}`
+        Authorization: `Bearer ${getGroqApiKey(env)}`
       },
       body: {
         model: env.GROQ_MODEL ?? "llama-3.1-8b-instant",

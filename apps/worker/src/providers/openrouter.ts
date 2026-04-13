@@ -6,11 +6,15 @@ import type { ProviderAdapter } from "./base";
 
 const endpoint = "https://openrouter.ai/api/v1/chat/completions";
 
+function getOpenRouterApiKey(env: Env) {
+  return env.OPENROUTER_API_KEY?.trim() ?? "";
+}
+
 export const openRouterProvider: ProviderAdapter = {
   id: "openrouter",
   label: "OpenRouter Free",
   supportsStreaming: true,
-  isConfigured: (env) => Boolean(env.OPENROUTER_API_KEY),
+  isConfigured: (env) => Boolean(getOpenRouterApiKey(env)),
   getModel: (env) => env.OPENROUTER_MODEL ?? "meta-llama/llama-3.2-3b-instruct:free",
   async generate(request: ChatRequest, env: Env, signal) {
     const startedAt = Date.now();
@@ -19,7 +23,7 @@ export const openRouterProvider: ProviderAdapter = {
       provider: "openrouter",
       signal,
       headers: {
-        Authorization: `Bearer ${env.OPENROUTER_API_KEY ?? ""}`,
+        Authorization: `Bearer ${getOpenRouterApiKey(env)}`,
         "HTTP-Referer": env.OPENROUTER_HTTP_REFERER ?? "https://relayforge-ai.pages.dev",
         "X-Title": env.OPENROUTER_APP_TITLE ?? "RelayForge AI"
       },
@@ -48,7 +52,7 @@ export const openRouterProvider: ProviderAdapter = {
       provider: "openrouter",
       signal,
       headers: {
-        Authorization: `Bearer ${env.OPENROUTER_API_KEY ?? ""}`,
+        Authorization: `Bearer ${getOpenRouterApiKey(env)}`,
         "HTTP-Referer": env.OPENROUTER_HTTP_REFERER ?? "https://relayforge-ai.pages.dev",
         "X-Title": env.OPENROUTER_APP_TITLE ?? "RelayForge AI"
       },
