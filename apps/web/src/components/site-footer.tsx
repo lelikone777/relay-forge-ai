@@ -21,7 +21,7 @@ export function SiteFooter() {
       <div className="shell-container flex flex-col gap-8 py-10 md:flex-row md:items-end md:justify-between">
         <div className="space-y-4">
           <BrandMark />
-          <p className="max-w-md text-sm leading-6 text-muted-foreground">
+          <p className="text-safe max-w-md text-sm leading-6 text-muted-foreground">
             {pickLocale(locale, {
               ru: "AI gateway playground с приоритетом free-tier: стриминг, fallback-маршрутизация и demo-safe надежность для публичного деплоя.",
               en: "Free-tier-first AI gateway playground with streaming, fallback routing and demo-safe reliability for public deployment."

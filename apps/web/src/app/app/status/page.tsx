@@ -40,7 +40,7 @@ export default function StatusPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <PageIntro
         eyebrow={pickLocale(locale, { ru: "Состояние Провайдеров", en: "Provider Health" })}
         title={pickLocale(locale, {
@@ -120,7 +120,7 @@ export default function StatusPage() {
                   <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                     {pickLocale(locale, { ru: "Модель", en: "Model" })}
                   </div>
-                  <div className="mt-2 text-sm text-foreground">{provider.model}</div>
+                  <div className="text-safe mt-2 text-sm text-foreground break-words">{provider.model}</div>
                 </div>
                 <div className="rounded-2xl border border-border/70 bg-background/60 p-4">
                   <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">

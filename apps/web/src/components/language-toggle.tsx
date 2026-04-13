@@ -10,15 +10,18 @@ export function LanguageToggle() {
   const { locale, setLocale } = useI18n();
 
   return (
-    <div className="flex h-11 items-center gap-1 rounded-xl border border-border/70 bg-panel/70 p-1">
-      <div className="px-2 text-muted-foreground">
+    <div className="flex h-10 items-center gap-0.5 rounded-xl border border-border/70 bg-panel/70 p-1">
+      <div className="hidden px-1.5 text-muted-foreground min-[380px]:block">
         <Languages className="h-4 w-4" />
       </div>
       <Button
         size="sm"
         variant="ghost"
         onClick={() => setLocale("ru")}
-        className={cn("h-8 px-2", locale === "ru" && "bg-accent/15 text-accent hover:bg-accent/20")}
+        className={cn(
+          "h-8 px-1.5 text-[11px] min-[380px]:px-2",
+          locale === "ru" && "bg-accent/15 text-accent hover:bg-accent/20"
+        )}
       >
         RU
       </Button>
@@ -26,7 +29,10 @@ export function LanguageToggle() {
         size="sm"
         variant="ghost"
         onClick={() => setLocale("en")}
-        className={cn("h-8 px-2", locale === "en" && "bg-accent/15 text-accent hover:bg-accent/20")}
+        className={cn(
+          "h-8 px-1.5 text-[11px] min-[380px]:px-2",
+          locale === "en" && "bg-accent/15 text-accent hover:bg-accent/20"
+        )}
       >
         EN
       </Button>

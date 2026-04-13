@@ -41,7 +41,7 @@ export default function UsagePage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <PageIntro
         eyebrow={pickLocale(locale, { ru: "Аналитика", en: "Analytics" })}
         title={pickLocale(locale, {
@@ -106,8 +106,8 @@ export default function UsagePage() {
             <ProviderDistributionChart data={data.data.providerDistribution} />
             <div className="grid gap-2">
               {data.data.providerDistribution.map((entry) => (
-                <div key={entry.provider} className="flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 px-4 py-3 text-sm">
-                  <span>{entry.provider}</span>
+                <div key={entry.provider} className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-background/60 px-4 py-3 text-sm">
+                  <span className="text-safe break-words">{entry.provider}</span>
                   <span className="font-medium">{formatNumber(entry.value)}</span>
                 </div>
               ))}

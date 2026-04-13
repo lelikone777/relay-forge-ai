@@ -137,7 +137,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <SiteHeader />
 
       <main>
@@ -146,13 +146,13 @@ export default function HomePage() {
             <motion.div {...fadeIn} className="space-y-8">
               <Badge variant="accent">{t("Unified AI Gateway на Free-Tier Infrastructure", "Unified AI Gateway on Free-Tier Infrastructure")}</Badge>
               <div className="space-y-6">
-                <h1 className="font-display text-5xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+                <h1 className="text-safe font-display text-4xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
                   {t(
                     "RelayForge AI маршрутизирует, стримит и восстанавливается как реальный AI infrastructure продукт.",
                     "RelayForge AI routes, streams and recovers like a real AI infrastructure product."
                   )}
                 </h1>
-                <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
+                <p className="text-safe max-w-2xl text-lg leading-8 text-muted-foreground">
                   {t(
                     "Одна API-поверхность, несколько провайдеров, нормализованные ошибки и устойчивый fallback от Groq Free к OpenRouter Free и далее к demo-safe mock-провайдеру.",
                     "One API surface, multiple providers, normalized errors and resilient fallback from Groq Free to OpenRouter free models to a demo-safe mock provider."
@@ -497,7 +497,7 @@ export default function HomePage() {
         <section className="shell-container pb-24 pt-8">
           <motion.div {...fadeIn}>
             <Card className="overflow-hidden">
-              <CardContent className="grid gap-8 p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+              <CardContent className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div className="space-y-4">
                   <div className="eyebrow">{t("Готово к исследованию", "Ready to explore")}</div>
                   <h2 className="font-display text-4xl font-semibold text-balance">

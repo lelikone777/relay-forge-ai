@@ -81,7 +81,7 @@ export default function PlaygroundPage() {
   }, [locale]);
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <PageIntro
         eyebrow={pickLocale(locale, { ru: "Ключевой Сценарий", en: "Core Experience" })}
         title={pickLocale(locale, {
@@ -219,7 +219,7 @@ export default function PlaygroundPage() {
             </CardHeader>
             <CardContent className="space-y-5">
               {responseText ? (
-                <div className="rounded-2xl border border-border/70 bg-background/70 p-5 font-mono text-sm leading-7 text-foreground">
+                <div className="rounded-2xl border border-border/70 bg-background/70 p-5 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
                   {responseText}
                   {isStreaming ? <span className="animate-blink">|</span> : null}
                 </div>
@@ -261,19 +261,19 @@ export default function PlaygroundPage() {
                 <CardTitle className="text-base">{pickLocale(locale, { ru: "Метаданные запроса", en: "Request metadata" })}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Выбранная стратегия", en: "Selected strategy" })}</span>
-                  <span className="text-foreground">{strategy}</span>
+                  <span className="text-safe text-right text-foreground break-words">{strategy}</span>
                 </div>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Старт", en: "Started at" })}</span>
-                  <span className="text-foreground">
+                  <span className="text-safe text-right text-foreground break-words">
                     {requestStartedAt ? formatTimestamp(requestStartedAt) : pickLocale(locale, { ru: "Ожидание", en: "Idle" })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Транспорт", en: "Transport" })}</span>
-                  <span className="text-foreground">{streamingEnabled ? "text/event-stream" : "json"}</span>
+                  <span className="text-safe text-right text-foreground break-words">{streamingEnabled ? "text/event-stream" : "json"}</span>
                 </div>
               </CardContent>
             </Card>
@@ -282,27 +282,27 @@ export default function PlaygroundPage() {
                 <CardTitle className="text-base">{pickLocale(locale, { ru: "Метаданные ответа", en: "Response metadata" })}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Изначальный провайдер", en: "Attempted provider" })}</span>
-                  <span className="text-foreground">
+                  <span className="text-safe text-right text-foreground break-words">
                     {responseMeta?.attemptedProvider ?? pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Финальный провайдер", en: "Final provider" })}</span>
-                  <span className="text-foreground">
+                  <span className="text-safe text-right text-foreground break-words">
                     {responseMeta?.finalProvider ?? pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Задержка", en: "Latency" })}</span>
-                  <span className="text-foreground">
+                  <span className="text-safe text-right text-foreground break-words">
                     {responseMeta ? formatDuration(responseMeta.latencyMs) : pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-start justify-between gap-4">
                   <span>{pickLocale(locale, { ru: "Fallback", en: "Fallback" })}</span>
-                  <span className="text-foreground">
+                  <span className="text-safe text-right text-foreground break-words">
                     {responseMeta?.fallbackActivated
                       ? pickLocale(locale, { ru: "Активирован", en: "Activated" })
                       : pickLocale(locale, { ru: "Нет", en: "No" })}

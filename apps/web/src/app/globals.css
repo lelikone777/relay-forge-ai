@@ -46,7 +46,7 @@
   }
 
   body {
-    @apply min-h-screen bg-background font-sans text-foreground antialiased;
+    @apply min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased;
     background-image:
       radial-gradient(circle at top left, rgba(77, 123, 255, 0.18), transparent 34%),
       radial-gradient(circle at top right, rgba(110, 84, 255, 0.14), transparent 28%),
@@ -62,6 +62,14 @@
 
   ::selection {
     background: rgba(77, 123, 255, 0.28);
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+    height: auto;
   }
 }
 
@@ -80,6 +88,11 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-safe {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .surface-grid {

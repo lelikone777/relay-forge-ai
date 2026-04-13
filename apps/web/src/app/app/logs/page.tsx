@@ -55,7 +55,7 @@ export default function LogsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <PageIntro
         eyebrow={pickLocale(locale, { ru: "Наблюдаемость", en: "Observability" })}
         title={pickLocale(locale, {
@@ -94,25 +94,25 @@ export default function LogsPage() {
             })}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 overflow-x-hidden">
           {items.map((item) => (
             <div
               key={item.id}
               className="grid gap-4 rounded-2xl border border-border/70 bg-background/60 p-4 lg:grid-cols-[1.1fr_0.5fr_0.45fr_0.45fr_0.4fr]"
             >
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-foreground">{item.promptPreview}</div>
+              <div className="min-w-0 space-y-2">
+                <div className="text-safe text-sm font-medium text-foreground">{item.promptPreview}</div>
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{formatTimestamp(item.timestamp)}</div>
               </div>
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Маршрутизация", en: "Routing" })}
                 </div>
-                <div className="text-sm text-foreground">
+                <div className="text-safe text-sm text-foreground break-words">
                   {item.attemptedProvider} {"->"} {item.finalProvider}
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Статус", en: "Status" })}
                 </div>
@@ -133,17 +133,17 @@ export default function LogsPage() {
                   <ProviderStatusPill status={item.degradedMode ? "degraded" : "live"} />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Длительность", en: "Duration" })}
                 </div>
                 <div className="text-sm text-foreground">{formatDuration(item.durationMs)}</div>
               </div>
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {pickLocale(locale, { ru: "Стратегия", en: "Strategy" })}
                 </div>
-                <div className="text-sm text-foreground">{item.strategy}</div>
+                <div className="text-safe text-sm text-foreground break-words">{item.strategy}</div>
               </div>
             </div>
           ))}

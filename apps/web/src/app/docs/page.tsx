@@ -66,13 +66,13 @@ export default function DocsPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <SiteHeader />
 
       <main className="shell-container section-space space-y-10">
         <div className="space-y-5">
           <Badge variant="accent">{t("Документация Для Разработчиков", "Developer Docs")}</Badge>
-          <h1 className="font-display text-5xl font-semibold tracking-tight text-balance">RelayForge AI API</h1>
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-balance sm:text-5xl">RelayForge AI API</h1>
           <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
             {t(
               "RelayForge AI — это serverless AI gateway playground с единым request-контрактом, free-tier-first маршрутизацией провайдеров, стримингом и нормализованной обработкой ошибок.",
@@ -137,7 +137,7 @@ export default function DocsPage() {
             {endpoints.map(([method, path, description]) => (
               <div key={path} className="grid gap-3 rounded-2xl border border-border/70 bg-background/60 p-4 md:grid-cols-[120px_220px_1fr]">
                 <Badge variant={method === "GET" ? "success" : "accent"}>{method}</Badge>
-                <div className="font-mono text-sm text-foreground">{path}</div>
+                <div className="font-mono text-sm text-foreground break-all">{path}</div>
                 <div className="text-sm text-muted-foreground">{description}</div>
               </div>
             ))}

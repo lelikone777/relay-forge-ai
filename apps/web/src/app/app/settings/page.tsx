@@ -28,7 +28,7 @@ export default function SettingsPage() {
   } = useSettings();
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <PageIntro
         eyebrow={pickLocale(locale, { ru: "Настройки Workspace", en: "Workspace Settings" })}
         title={pickLocale(locale, {
@@ -90,8 +90,8 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 p-4">
-              <div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+              <div className="min-w-0">
                 <div className="font-medium text-foreground">
                   {pickLocale(locale, { ru: "Предпочтение стриминга", en: "Streaming preference" })}
                 </div>
@@ -104,8 +104,8 @@ export default function SettingsPage() {
               </div>
               <Switch checked={streamingEnabled} onCheckedChange={setStreamingEnabled} />
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 p-4">
-              <div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+              <div className="min-w-0">
                 <div className="font-medium text-foreground">
                   {pickLocale(locale, { ru: "Ненавязчивые demo-подсказки", en: "Subtle demo hints" })}
                 </div>
@@ -118,8 +118,8 @@ export default function SettingsPage() {
               </div>
               <Switch checked={subtleDemoHints} onCheckedChange={setSubtleDemoHints} />
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 p-4">
-              <div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+              <div className="min-w-0">
                 <div className="font-medium text-foreground">{pickLocale(locale, { ru: "Тема", en: "Theme" })}</div>
                 <div className="text-sm text-muted-foreground">
                   {pickLocale(locale, { ru: "Текущая тема", en: "Current theme" })}: {resolvedTheme ?? pickLocale(locale, { ru: "загрузка", en: "loading" })}
@@ -153,7 +153,7 @@ export default function SettingsPage() {
             <CardTitle>{pickLocale(locale, { ru: "Базовый URL API", en: "API base URL" })}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <div className="font-mono text-xs text-foreground">{appConfig.apiBaseUrl}</div>
+            <div className="font-mono text-xs text-foreground break-all">{appConfig.apiBaseUrl}</div>
             <div>
               {pickLocale(locale, {
                 ru: "Вставляется на этапе сборки через `NEXT_PUBLIC_API_BASE_URL`.",

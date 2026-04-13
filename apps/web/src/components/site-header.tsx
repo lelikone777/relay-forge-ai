@@ -21,8 +21,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="shell-container flex h-20 items-center justify-between gap-4">
-        <Link href="/" className="shrink-0">
-          <BrandMark />
+        <Link href="/" className="min-w-0 shrink-0">
+          <BrandMark compactOnMobile />
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           {items.map((item) => (
@@ -31,7 +31,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <LanguageToggle />
           <ThemeToggle />
           <Button asChild className="hidden sm:inline-flex">

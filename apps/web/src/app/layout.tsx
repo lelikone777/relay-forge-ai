@@ -22,9 +22,51 @@ const mono = IBM_Plex_Mono({
   variable: "--font-mono"
 });
 
+const siteUrl = "https://relayforge-ai.pages.dev";
+
 export const metadata: Metadata = {
-  title: "RelayForge AI",
-  description: "Единый AI gateway playground на free-tier инфраструктуре."
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "RelayForge AI | Unified AI Gateway",
+    template: "%s | RelayForge AI"
+  },
+  description:
+    "RelayForge AI is a serverless free-tier AI gateway playground with streaming responses, provider fallback orchestration, and normalized error handling.",
+  keywords: [
+    "RelayForge AI",
+    "AI Gateway",
+    "Cloudflare Workers",
+    "Cloudflare Pages",
+    "Groq Free",
+    "OpenRouter",
+    "Fallback orchestration",
+    "Streaming API"
+  ],
+  applicationName: "RelayForge AI",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "RelayForge AI",
+    title: "RelayForge AI | Unified AI Gateway",
+    description:
+      "Serverless free-tier AI gateway playground with real-time streaming, automatic fallback, and normalized provider errors."
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RelayForge AI | Unified AI Gateway",
+    description:
+      "Serverless free-tier AI gateway playground with real-time streaming and resilient provider fallback."
+  },
+  robots: {
+    index: true,
+    follow: true
+  },
+  icons: {
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

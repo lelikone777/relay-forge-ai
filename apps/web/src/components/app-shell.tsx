@@ -38,9 +38,9 @@ export function AppShell({ children }: PropsWithChildren) {
   const mode = data?.data.mode ?? "demo";
 
   return (
-    <div className="shell-container grid gap-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="space-y-4">
-        <Card className="sticky top-6 overflow-hidden p-4">
+    <div className="shell-container grid min-w-0 gap-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <aside className="min-w-0 space-y-4">
+        <Card className="overflow-hidden p-3 sm:p-4 lg:sticky lg:top-6">
           <div className="space-y-6">
             <BrandMark />
             <div className="space-y-2">
@@ -53,15 +53,15 @@ export function AppShell({ children }: PropsWithChildren) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
+                      "flex min-w-0 items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
                       active
                         ? "border-accent/30 bg-accent/12 text-foreground shadow-glow"
                         : "border-transparent text-muted-foreground hover:border-border/60 hover:bg-background/60 hover:text-foreground"
                     )}
                   >
-                    <span className="flex items-center gap-3">
+                    <span className="flex min-w-0 items-center gap-3">
                       <Icon className="h-4 w-4" />
-                      {pickLocale(locale, item.label)}
+                      <span className="text-safe">{pickLocale(locale, item.label)}</span>
                     </span>
                   </Link>
                 );
@@ -74,7 +74,7 @@ export function AppShell({ children }: PropsWithChildren) {
               <div className="mt-2 font-display text-lg font-semibold">
                 {pickLocale(locale, { ru: "Публичный Sandbox", en: appConfig.workspace })}
               </div>
-              <div className="mt-2 text-sm text-muted-foreground">
+              <div className="mt-2 text-safe text-sm text-muted-foreground">
                 {pickLocale(locale, {
                   ru: "Cloudflare Pages + Workers",
                   en: appConfig.environment
@@ -84,16 +84,16 @@ export function AppShell({ children }: PropsWithChildren) {
           </div>
         </Card>
       </aside>
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <Card className="p-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+            <div className="min-w-0">
               <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                 {pickLocale(locale, { ru: "Режим системы", en: "System mode" })}
               </div>
               <div className="mt-2 flex items-center gap-3">
                 <ModePill mode={mode} />
-                <span className="text-sm text-muted-foreground">
+                <span className="text-safe text-sm text-muted-foreground">
                   {pickLocale(locale, {
                     ru: "Free-tier маршрутизация с автоматическим fallback и demo-safe надежностью.",
                     en: "Free-tier routing with automatic fallback and demo-safe reliability."
@@ -101,16 +101,16 @@ export function AppShell({ children }: PropsWithChildren) {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex w-full flex-wrap items-center gap-2 sm:gap-3 md:w-auto md:justify-end">
               <LanguageToggle />
               <ThemeToggle />
-              <Button asChild variant="secondary">
+              <Button asChild variant="secondary" className="w-full min-[420px]:w-auto">
                 <Link href="/">{pickLocale(locale, { ru: "Маркетинговый сайт", en: "Marketing Site" })}</Link>
               </Button>
             </div>
           </div>
         </Card>
-        <main>{children}</main>
+        <main className="min-w-0">{children}</main>
       </div>
     </div>
   );
