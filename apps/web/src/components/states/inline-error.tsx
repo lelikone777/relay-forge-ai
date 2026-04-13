@@ -1,0 +1,37 @@
+import { AlertTriangle, RefreshCw } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+export function InlineError({
+  title,
+  description,
+  onRetry
+}: {
+  title: string;
+  description: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <Card className="border-danger/20">
+      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="rounded-xl border border-danger/25 bg-danger/10 p-2 text-danger">
+            <AlertTriangle className="h-4 w-4" />
+          </div>
+          <div className="space-y-1">
+            <div className="font-medium text-foreground">{title}</div>
+            <div className="text-sm text-muted-foreground">{description}</div>
+          </div>
+        </div>
+        {onRetry ? (
+          <Button onClick={onRetry} variant="secondary">
+            <RefreshCw className="h-4 w-4" />
+            Retry
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
