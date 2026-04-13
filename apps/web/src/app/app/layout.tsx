@@ -4,7 +4,10 @@ import type { PropsWithChildren } from "react";
 import { AppShell } from "@/components/app-shell";
 
 export const metadata: Metadata = {
-  title: "Workspace",
+  title: {
+    default: "Workspace | RelayForge AI",
+    template: "%s | RelayForge AI"
+  },
   description: "RelayForge AI workspace: playground, provider status, logs, usage analytics, and settings."
 };
 
