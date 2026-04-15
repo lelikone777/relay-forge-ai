@@ -1,5 +1,6 @@
 "use client";
 
+import { BookOpen, FileCode2, GitBranch, RadioTower, ShieldAlert, Waves } from "lucide-react";
 import Link from "next/link";
 
 import { SiteFooter } from "@/components/site-footer";
@@ -11,7 +12,7 @@ import { pickLocale } from "@/lib/i18n";
 import { useI18n } from "@/providers/i18n-provider";
 
 const requestExample = `{
-  "prompt": "Explain free-tier fallback strategy",
+  "prompt": "Explain the fallback strategy in RelayForge",
   "options": {
     "strategy": "auto",
     "stream": true,
@@ -26,7 +27,7 @@ const requestExample = `{
 const responseExample = `{
   "success": true,
   "data": {
-    "text": "RelayForge first tries Groq Free...",
+    "text": "RelayForge first tries Groq...",
     "meta": {
       "strategy": "auto",
       "attemptedProvider": "groq",
@@ -57,148 +58,256 @@ export default function DocsPage() {
   const { locale } = useI18n();
   const t = (ru: string, en: string) => pickLocale(locale, { ru, en });
 
-  const endpoints = [
-    ["POST", "/api/v1/chat", t("Normalized JSON response with provider metadata.", "Normalized JSON response with provider metadata.")],
-    ["POST", "/api/v1/stream", t("SSE-compatible streaming endpoint for progressive tokens.", "SSE-compatible streaming endpoint for progressive tokens.")],
-    ["GET", "/api/v1/providers/status", t("Provider health snapshot and routing order.", "Provider health snapshot and routing order.")],
-    ["GET", "/api/v1/logs", t("Recent request history with fallback metadata.", "Recent request history with fallback metadata.")],
-    ["GET", "/api/v1/usage", t("Usage aggregates, latency and provider distribution.", "Usage aggregates, latency and provider distribution.")]
+  const endpointCards = [
+    {
+      method: "POST",
+      path: "/api/v1/chat",
+      description: t("Нормализованный JSON-ответ с provider metadata.", "Normalized JSON response with provider metadata.")
+    },
+    {
+      method: "POST",
+      path: "/api/v1/stream",
+      description: t("SSE-совместимый streaming endpoint для токенов и meta-событий.", "SSE-compatible streaming endpoint for tokens and meta events.")
+    },
+    {
+      method: "GET",
+      path: "/api/v1/providers/status",
+      description: t("Снимок состояния провайдеров и routing order.", "Provider health snapshot and routing order.")
+    },
+    {
+      method: "GET",
+      path: "/api/v1/logs",
+      description: t("Последняя история запросов с fallback metadata.", "Recent request history with fallback metadata.")
+    },
+    {
+      method: "GET",
+      path: "/api/v1/usage",
+      description: t("Агрегаты usage, latency и распределение провайдеров.", "Usage aggregates, latency and provider distribution.")
+    }
+  ];
+
+  const overviewCards = [
+    {
+      icon: BookOpen,
+      title: t("Единый контракт", "Unified contract"),
+      description: t(
+        "Frontend и Worker разделяют типы запросов, ответов и ошибок через shared-пакет.",
+        "Frontend and Worker share request, response and error types through the shared package."
+      )
+    },
+    {
+      icon: RadioTower,
+      title: t("Потоковый транспорт", "Streaming transport"),
+      description: t(
+        "Стриминг идет через POST + text/event-stream, а UI получает token, meta, error и done.",
+        "Streaming runs through POST + text/event-stream while the UI receives token, meta, error and done events."
+      )
+    },
+    {
+      icon: GitBranch,
+      title: t("Fallback-логика", "Fallback logic"),
+      description: t(
+        "Auto mode начинает с Groq, затем переключается на OpenRouter и при необходимости на mock provider.",
+        "Auto mode starts with Groq, then promotes to OpenRouter and finally to the mock provider when needed."
+      )
+    },
+    {
+      icon: ShieldAlert,
+      title: t("Модель ошибок", "Error model"),
+      description: t(
+        "UI получает читаемые коды и сообщения без утечки сырых stack trace в интерфейс.",
+        "The UI receives readable codes and messages without leaking raw stack traces into the interface."
+      )
+    }
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen text-foreground">
       <SiteHeader />
 
-      <main className="shell-container section-space space-y-10">
-        <div className="space-y-5">
-          <Badge variant="accent">{t("Developer Docs", "Developer Docs")}</Badge>
-          <h1 className="font-display text-5xl font-semibold tracking-tight text-balance text-white">RelayForge AI API</h1>
-          <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
-            {t(
-              "RelayForge AI — serverless AI gateway playground с единым request contract, free-tier-first маршрутизацией, стримингом и нормализованной обработкой ошибок.",
-              "RelayForge AI is a serverless AI gateway playground with a unified request contract, free-tier-first routing, streaming transport and normalized error handling."
-            )}
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild>
-              <Link href="/app/playground">{t("Open Playground", "Open Playground")}</Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/app/status">{t("View Provider Status", "View Provider Status")}</Link>
-            </Button>
+      <main className="pb-10">
+        <section className="landing-section pt-20 lg:pt-24">
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute left-1/2 top-0 h-[720px] w-[720px] -translate-x-1/2 rounded-full bg-cyan-500/12 blur-[120px] dark:bg-cyan-500/20" />
+            <div className="absolute right-0 top-28 h-[520px] w-[520px] rounded-full bg-violet-500/10 blur-[120px] dark:bg-violet-500/16" />
+            <div className="absolute inset-0 surface-grid opacity-50 grid-fade" />
           </div>
-        </div>
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Product overview", "Product overview")}</CardTitle>
-              <CardDescription>{t("One API surface with resilient provider fallback.", "One API surface with resilient provider fallback.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm leading-7 text-muted-foreground">
-              {t(
-                "Основная маршрутизация идет в Groq Free. Free-модели OpenRouter обслуживают fallback. Mock-провайдер гарантирует работающий public demo path даже при проблемах у реальных провайдеров.",
-                "Primary routing targets Groq Free. OpenRouter free models handle fallback. The mock provider guarantees a working public demo path even when real providers are unavailable."
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Streaming behavior", "Streaming behavior")}</CardTitle>
-              <CardDescription>{t("SSE events are forwarded as normalized token updates.", "SSE events are forwarded as normalized token updates.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm leading-7 text-muted-foreground">
-              {t(
-                "Если provider не может стартовать stream корректно, Worker переключает запрос на следующий приоритетный уровень до начала вывода.",
-                "If a provider cannot start the stream cleanly, the Worker promotes the request to the next priority level before output begins."
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Error model", "Error model")}</CardTitle>
-              <CardDescription>{t("Consistent shape across validation and upstream failures.", "Consistent shape across validation and upstream failures.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm leading-7 text-muted-foreground">
-              {t(
-                "Поддерживаются коды validation_error, provider_timeout, provider_rate_limited, provider_unavailable, malformed_upstream_response, stream_interrupted и internal_error.",
-                "Supported codes include validation_error, provider_timeout, provider_rate_limited, provider_unavailable, malformed_upstream_response, stream_interrupted and internal_error."
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("Endpoint reference", "Endpoint reference")}</CardTitle>
-            <CardDescription>{t("Worker API surface exposed to the frontend.", "Worker API surface exposed to the frontend.")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {endpoints.map(([method, path, description]) => (
-              <div key={path} className="grid gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 p-4 md:grid-cols-[120px_220px_1fr]">
-                <Badge variant={method === "GET" ? "success" : "accent"}>{method}</Badge>
-                <div className="font-mono text-sm text-foreground break-all">{path}</div>
-                <div className="text-sm text-muted-foreground">{description}</div>
+          <div className="shell-container space-y-8">
+            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="space-y-6">
+                <div className="eyebrow">
+                  <FileCode2 className="h-3.5 w-3.5" />
+                  {t("Документация разработчика", "Developer documentation")}
+                </div>
+                <div className="space-y-4">
+                  <h1 className="text-balance font-display text-5xl font-semibold tracking-tight sm:text-6xl">
+                    {t("API и контракты RelayForge", "RelayForge API and contracts")}
+                  </h1>
+                  <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
+                    {t(
+                      "Документация описывает реальный слой Worker API: chat, stream, status, logs и usage. Здесь нет фиктивных SDK-обещаний, только текущие контракты проекта.",
+                      "This documentation describes the real Worker API layer: chat, stream, status, logs and usage. No fictional SDK promises, only the current project contracts."
+                    )}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild size="lg">
+                    <Link href="/app/playground">{t("Открыть песочницу", "Open playground")}</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="secondary">
+                    <Link href="/app/status">{t("Статус провайдеров", "Provider status")}</Link>
+                  </Button>
+                </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        <div className="grid gap-4 xl:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Request example", "Request example")}</CardTitle>
-              <CardDescription>{t("Typed contract shared between frontend and Worker.", "Typed contract shared between frontend and Worker.")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <pre className="overflow-x-auto rounded-[1.5rem] border border-white/10 bg-black/25 p-5 font-mono text-xs leading-6 text-foreground">{requestExample}</pre>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Response example", "Response example")}</CardTitle>
-              <CardDescription>{t("Every success payload returns normalized provider metadata.", "Every success payload returns normalized provider metadata.")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <pre className="overflow-x-auto rounded-[1.5rem] border border-white/10 bg-black/25 p-5 font-mono text-xs leading-6 text-foreground">{responseExample}</pre>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="p-6">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">{t("Поверхность API", "API surface")}</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {t("Пять ключевых endpoint'ов, к которым привязан интерфейс.", "Five core endpoints backing the interface.")}
+                    </p>
+                  </div>
+                  <Badge variant="accent">5 routes</Badge>
+                </div>
+                <div className="space-y-3">
+                  {endpointCards.map((endpoint) => (
+                    <div key={endpoint.path} className="panel-subtle p-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Badge variant={endpoint.method === "GET" ? "success" : "accent"}>{endpoint.method}</Badge>
+                        <div className="font-mono text-sm text-foreground">{endpoint.path}</div>
+                      </div>
+                      <div className="mt-3 text-sm leading-7 text-muted-foreground">{endpoint.description}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Streaming notes", "Streaming notes")}</CardTitle>
-              <CardDescription>{t("POST-based streaming via fetch and text/event-stream.", "POST-based streaming via fetch and text/event-stream.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
-              <p>{t("Event types are token, meta, error and done.", "Event types are token, meta, error and done.")}</p>
-              <p>{t("Metadata reports selected strategy, attempted provider, final provider, fallback activation, mode, latency and model.", "Metadata reports selected strategy, attempted provider, final provider, fallback activation, mode, latency and model.")}</p>
-              <p>{t("If a stream fails before tokens begin, RelayForge retries against the next provider in priority order.", "If a stream fails before tokens begin, RelayForge retries against the next provider in priority order.")}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("Fallback explanation", "Fallback explanation")}</CardTitle>
-              <CardDescription>{t("Explicit orchestration designed for free-tier reliability.", "Explicit orchestration designed for free-tier reliability.")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-7 text-muted-foreground">
-              <p>{t("Auto mode attempts Groq first.", "Auto mode attempts Groq first.")}</p>
-              <p>{t("Timeout, rate-limit, temporary unavailability or malformed upstream responses trigger OpenRouter.", "Timeout, rate-limit, temporary unavailability or malformed upstream responses trigger OpenRouter.")}</p>
-              <p>{t("If OpenRouter also fails or quota is exhausted, the request is served by the mock provider.", "If OpenRouter also fails or quota is exhausted, the request is served by the mock provider.")}</p>
-            </CardContent>
-          </Card>
-        </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {overviewCards.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Card key={item.title} className="p-6">
+                    <div className="mb-4 inline-flex rounded-[1rem] border border-border/70 bg-[hsl(var(--panel)/0.72)] p-3 dark:border-white/10 dark:bg-white/[0.05]">
+                      <Icon className="h-5 w-5 text-accent" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.description}</p>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("Normalized error shape", "Normalized error shape")}</CardTitle>
-            <CardDescription>{t("Errors remain human-readable and technically credible without leaking raw stacks into the UI.", "Errors remain human-readable and technically credible without leaking raw stacks into the UI.")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <pre className="overflow-x-auto rounded-[1.5rem] border border-white/10 bg-black/25 p-5 font-mono text-xs leading-6 text-foreground">{errorExample}</pre>
-          </CardContent>
-        </Card>
+        <section className="landing-section">
+          <div className="shell-container space-y-6">
+            <div className="space-y-3">
+              <Badge>{t("Справочник endpoint'ов", "Endpoint reference")}</Badge>
+              <h2 className="text-balance font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+                {t("Что именно вызывает frontend", "What the frontend actually calls")}
+              </h2>
+              <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
+                {t(
+                  "Эти маршруты составляют реальную API-поверхность между Next.js интерфейсом и Worker.",
+                  "These routes form the real API surface between the Next.js interface and the Worker."
+                )}
+              </p>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {endpointCards.map((endpoint) => (
+                  <div key={endpoint.path} className="grid gap-3 rounded-[1.25rem] border border-border/70 bg-[hsl(var(--panel)/0.72)] p-4 dark:border-white/10 dark:bg-white/[0.05] md:grid-cols-[120px_240px_1fr]">
+                    <Badge variant={endpoint.method === "GET" ? "success" : "accent"}>{endpoint.method}</Badge>
+                    <div className="font-mono text-sm text-foreground break-all">{endpoint.path}</div>
+                    <div className="text-sm text-muted-foreground">{endpoint.description}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        <section className="landing-section">
+          <div className="shell-container grid gap-4 xl:grid-cols-2">
+            <Card className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>{t("Пример запроса", "Request example")}</CardTitle>
+                <CardDescription>{t("Типизированный payload, общий для frontend и Worker.", "A typed payload shared by frontend and Worker.")}</CardDescription>
+              </CardHeader>
+              <CardContent className="px-0 pb-0">
+                <pre className="panel-inset overflow-x-auto p-5 font-mono text-xs leading-6 text-foreground">{requestExample}</pre>
+              </CardContent>
+            </Card>
+
+            <Card className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>{t("Пример успешного ответа", "Successful response example")}</CardTitle>
+                <CardDescription>{t("Каждый успешный ответ возвращает нормализованную provider metadata.", "Every successful response returns normalized provider metadata.")}</CardDescription>
+              </CardHeader>
+              <CardContent className="px-0 pb-0">
+                <pre className="panel-inset overflow-x-auto p-5 font-mono text-xs leading-6 text-foreground">{responseExample}</pre>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section className="landing-section">
+          <div className="shell-container grid gap-4 xl:grid-cols-2">
+            <Card className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>{t("Потоковые заметки", "Streaming notes")}</CardTitle>
+                <CardDescription>{t("Как устроен потоковый transport-слой.", "How the streaming transport layer behaves.")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 px-0 pb-0 text-sm leading-7 text-muted-foreground">
+                <div className="panel-subtle p-4">
+                  <div className="font-medium text-foreground">{t("События", "Events")}</div>
+                  <div className="mt-2">{t("Поддерживаются token, meta, error и done.", "Supported event types are token, meta, error and done.")}</div>
+                </div>
+                <div className="panel-subtle p-4">
+                  <div className="font-medium text-foreground">{t("Метаданные", "Metadata")}</div>
+                  <div className="mt-2">
+                    {t(
+                      "Интерфейс получает strategy, attempted provider, final provider, факт fallback, mode, latency и model.",
+                      "The interface receives strategy, attempted provider, final provider, fallback state, mode, latency and model."
+                    )}
+                  </div>
+                </div>
+                <div className="panel-subtle p-4">
+                  <div className="font-medium text-foreground">{t("Поведение при сбое", "Failure behavior")}</div>
+                  <div className="mt-2">
+                    {t(
+                      "Если стрим не успел чисто стартовать, Worker переводит запрос на следующий приоритетный tier.",
+                      "If the stream cannot start cleanly, the Worker promotes the request to the next priority tier."
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>{t("Нормализованная ошибка", "Normalized error shape")}</CardTitle>
+                <CardDescription>{t("Читаемая ошибка для UI и техничная информация для диагностики.", "A readable error for the UI with technical details for diagnostics.")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 px-0 pb-0">
+                <pre className="panel-inset overflow-x-auto p-5 font-mono text-xs leading-6 text-foreground">{errorExample}</pre>
+                <div className="panel-subtle flex items-start gap-3 p-4 text-sm leading-7 text-muted-foreground">
+                  <Waves className="mt-1 h-4 w-4 shrink-0 text-accent" />
+                  <span>
+                    {t(
+                      "Ошибки остаются единообразными для chat и stream, чтобы UI не разъезжался по разным провайдерам.",
+                      "Errors stay consistent across chat and stream so the UI does not fragment across providers."
+                    )}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       </main>
 
       <SiteFooter />

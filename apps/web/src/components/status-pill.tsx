@@ -48,7 +48,7 @@ export function ModePill({ mode }: { mode: ModeId }) {
   return (
     <Badge variant={modeVariantMap[mode]}>
       {pickLocale(locale, {
-        ru: mode === "normal" ? "нормальный" : mode === "degraded" ? "деградация" : "демо",
+        ru: mode === "normal" ? "нормально" : mode === "degraded" ? "деградация" : "демо",
         en: mode
       })}
     </Badge>

@@ -33,8 +33,8 @@ export default function PlaygroundPage() {
   const { defaultStrategy, streamingEnabled } = useSettings();
   const [prompt, setPrompt] = useState(
     pickLocale(locale, {
-      ru: "Сформируй короткий launch-note для AI gateway, который автоматически переключается с Groq Free на OpenRouter и затем на mock-провайдера.",
-      en: "Design a concise rollout note for an AI gateway that automatically falls back from Groq Free to OpenRouter and finally to a mock provider."
+      ru: "Сформируй короткий launch note для AI gateway, который автоматически переключается с Groq Free на OpenRouter и затем на mock-провайдера.",
+      en: "Draft a short launch note for an AI gateway that automatically falls back from Groq Free to OpenRouter and finally to a mock provider."
     })
   );
   const [strategy, setStrategy] = useState<StrategyId>(defaultStrategy);
@@ -55,14 +55,14 @@ export default function PlaygroundPage() {
       },
       {
         label: responseMeta.demoMode
-          ? t("demo mode", "demo mode")
+          ? t("демо режим", "demo mode")
           : responseMeta.degradedMode
-            ? t("degraded mode", "degraded mode")
-            : t("normal", "normal"),
+            ? t("режим деградации", "degraded mode")
+            : t("нормально", "normal"),
         tone: "success" as const
       }
     ];
-  }, [responseMeta, locale]);
+  }, [locale, responseMeta]);
 
   useEffect(() => {
     setStrategy(defaultStrategy);
@@ -71,10 +71,7 @@ export default function PlaygroundPage() {
   useEffect(() => {
     setPrompt((current) =>
       current.trim().length === 0
-        ? t(
-            "Опиши ответ, который нужно маршрутизировать через RelayForge.",
-            "Describe the response you want routed through RelayForge."
-          )
+        ? t("Опиши ответ, который должен пройти через RelayForge.", "Describe the response you want routed through RelayForge.")
         : current
     );
   }, [locale]);
@@ -82,16 +79,16 @@ export default function PlaygroundPage() {
   return (
     <div className="min-w-0 space-y-8">
       <PageIntro
-        eyebrow={t("Core Experience", "Core Experience")}
-        title={t("Run prompts through the rebuilt gateway workspace", "Run prompts through the rebuilt gateway workspace")}
+        eyebrow={t("Ключевой сценарий", "Core Experience")}
+        title={t("Запуск промптов через рабочий gateway workspace", "Run prompts through the live gateway workspace")}
         description={t(
-          "Этот экран использует реальные endpoints чата и стриминга: ответ приходит из Worker, а UI показывает метаданные маршрутизации, fallback и latency в новом интерфейсе.",
-          "This screen uses the real chat and streaming endpoints: the response comes from the Worker while the UI exposes routing metadata, fallback and latency inside the rebuilt interface."
+          "Экран использует реальные chat и streaming endpoints. Ответ приходит из Worker, а интерфейс показывает strategy, fallback, final provider и latency в одном месте.",
+          "This screen uses the real chat and streaming endpoints. The Worker returns the response while the interface surfaces strategy, fallback, final provider and latency in one place."
         )}
         actions={
           <>
             <Badge variant="accent">POST /api/v1/stream</Badge>
-            <Badge>{streamingEnabled ? t("streaming on", "streaming on") : t("streaming off", "streaming off")}</Badge>
+            <Badge>{streamingEnabled ? t("стриминг включен", "streaming on") : t("стриминг выключен", "streaming off")}</Badge>
           </>
         }
       />
@@ -101,9 +98,9 @@ export default function PlaygroundPage() {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <CardTitle>{t("Prompt composer", "Prompt composer")}</CardTitle>
+                <CardTitle>{t("Редактор запроса", "Prompt composer")}</CardTitle>
                 <CardDescription>
-                  {t("Один payload, несколько стратегий маршрутизации и реальный stream transport.", "One payload, multiple routing strategies and a real streaming transport.")}
+                  {t("Один payload, несколько стратегий маршрутизации и реальный streaming transport.", "One payload, multiple routing strategies and a real streaming transport.")}
                 </CardDescription>
               </div>
               <Badge variant="accent">{strategy}</Badge>
@@ -112,67 +109,59 @@ export default function PlaygroundPage() {
           <CardContent className="space-y-6">
             <div className="flex flex-wrap gap-2">
               {strategies.map((item) => (
-                <Button
-                  key={item}
-                  variant={strategy === item ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => setStrategy(item)}
-                >
+                <Button key={item} variant={strategy === item ? "default" : "secondary"} size="sm" onClick={() => setStrategy(item)}>
                   {item}
                 </Button>
               ))}
             </div>
+
             <Textarea
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder={t(
-                "Опишите ответ, который должен пройти через gateway.",
-                "Describe the response that should pass through the gateway."
-              )}
+              placeholder={t("Опишите ответ, который должен пройти через gateway.", "Describe the response that should pass through the gateway.")}
               className="min-h-[18rem]"
             />
+
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Mode", "Mode")}</div>
+              <div className="panel-subtle p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Режим", "Mode")}</div>
                 <div className="mt-3 flex items-center gap-2">
                   <ModePill mode={statusData?.data.mode ?? "demo"} />
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Streaming", "Streaming")}</div>
+              <div className="panel-subtle p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Стриминг", "Streaming")}</div>
                 <div className="mt-3 text-sm text-foreground">
-                  {streamingEnabled ? t("Enabled by default", "Enabled by default") : t("Disabled in settings", "Disabled in settings")}
+                  {streamingEnabled ? t("Включен по умолчанию", "Enabled by default") : t("Отключен в настройках", "Disabled in settings")}
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Fallback order", "Fallback order")}</div>
+              <div className="panel-subtle p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Порядок fallback", "Fallback order")}</div>
                 <div className="mt-3 space-y-1 text-sm text-muted-foreground">
                   <div>1. Groq</div>
                   <div>2. OpenRouter</div>
                   <div>3. Mock</div>
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Public demo", "Public demo")}</div>
+              <div className="panel-subtle p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Публичное демо", "Public demo")}</div>
                 <div className="mt-3 text-sm text-foreground">
-                  {t("Если upstream недоступен, mock сохраняет тестируемость интерфейса.", "If upstream providers fail, mock keeps the interface testable.")}
+                  {t("Если upstream недоступен, mock сохраняет тестируемость публичного интерфейса.", "If upstream providers fail, mock keeps the public interface testable.")}
                 </div>
               </div>
             </div>
+
             <div className="flex flex-wrap gap-3">
-              <Button
-                onClick={() => void submit({ prompt, strategy, streamingEnabled })}
-                disabled={isStreaming || prompt.trim().length === 0}
-              >
+              <Button onClick={() => void submit({ prompt, strategy, streamingEnabled })} disabled={isStreaming || prompt.trim().length === 0}>
                 {isStreaming ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {t("Send request", "Send request")}
+                {t("Отправить запрос", "Send request")}
               </Button>
               <Button onClick={() => void (isStreaming ? stop() : retry())} variant="secondary">
                 {isStreaming ? <Square className="h-4 w-4" /> : <RotateCcw className="h-4 w-4" />}
-                {isStreaming ? t("Stop stream", "Stop stream") : t("Retry", "Retry")}
+                {isStreaming ? t("Остановить стрим", "Stop stream") : t("Повторить", "Retry")}
               </Button>
               <Button onClick={clear} variant="ghost">
-                {t("Reset", "Reset")}
+                {t("Сброс", "Reset")}
               </Button>
             </div>
           </CardContent>
@@ -183,23 +172,23 @@ export default function PlaygroundPage() {
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <CardTitle>{t("Streaming response", "Streaming response")}</CardTitle>
+                  <CardTitle>{t("Потоковый ответ", "Streaming response")}</CardTitle>
                   <CardDescription>
                     {t("Живой вывод токенов, метаданных и ошибок без смены layout.", "Live token output, metadata and errors without forcing a layout change.")}
                   </CardDescription>
                 </div>
-                {isStreaming ? <Badge variant="accent">{t("live stream", "live stream")}</Badge> : null}
+                {isStreaming ? <Badge variant="accent">{t("живой стрим", "live stream")}</Badge> : null}
               </div>
             </CardHeader>
             <CardContent className="space-y-5">
               {responseText ? (
-                <div className="min-h-[18rem] rounded-[1.5rem] border border-white/10 bg-black/30 p-5 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
+                <div className="panel-inset min-h-[18rem] p-5 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
                   {responseText}
                   {isStreaming ? <span className="animate-blink">|</span> : null}
                 </div>
               ) : (
                 <EmptyState
-                  title={t("No response yet", "No response yet")}
+                  title={t("Ответа пока нет", "No response yet")}
                   description={t(
                     "Запустите запрос, чтобы увидеть stream tokens, provider metadata и нормализованные fallback-события.",
                     "Run a request to inspect stream tokens, provider metadata and normalized fallback events."
@@ -232,51 +221,46 @@ export default function PlaygroundPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t("Request metadata", "Request metadata")}</CardTitle>
+                <CardTitle className="text-base">{t("Метаданные запроса", "Request metadata")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Selected strategy", "Selected strategy")}</span>
+                  <span>{t("Выбранная стратегия", "Selected strategy")}</span>
                   <span className="text-safe text-right text-foreground break-words">{strategy}</span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Started at", "Started at")}</span>
+                  <span>{t("Запущено", "Started at")}</span>
                   <span className="text-safe text-right text-foreground break-words">
-                    {requestStartedAt ? formatTimestamp(requestStartedAt) : t("Idle", "Idle")}
+                    {requestStartedAt ? formatTimestamp(requestStartedAt) : t("Ожидание", "Idle")}
                   </span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Transport", "Transport")}</span>
-                  <span className="text-safe text-right text-foreground break-words">
-                    {streamingEnabled ? "text/event-stream" : "json"}
-                  </span>
+                  <span>{t("Транспорт", "Transport")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{streamingEnabled ? "text/event-stream" : "json"}</span>
                 </div>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t("Response metadata", "Response metadata")}</CardTitle>
+                <CardTitle className="text-base">{t("Метаданные ответа", "Response metadata")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Attempted provider", "Attempted provider")}</span>
-                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.attemptedProvider ?? t("Pending", "Pending")}</span>
+                  <span>{t("Провайдер попытки", "Attempted provider")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.attemptedProvider ?? t("В ожидании", "Pending")}</span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Final provider", "Final provider")}</span>
-                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.finalProvider ?? t("Pending", "Pending")}</span>
+                  <span>{t("Финальный провайдер", "Final provider")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.finalProvider ?? t("В ожидании", "Pending")}</span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{t("Latency", "Latency")}</span>
-                  <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta ? formatDuration(responseMeta.latencyMs) : t("Pending", "Pending")}
-                  </span>
+                  <span>{t("Задержка", "Latency")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta ? formatDuration(responseMeta.latencyMs) : t("В ожидании", "Pending")}</span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
                   <span>{t("Fallback", "Fallback")}</span>
-                  <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta?.fallbackActivated ? t("Activated", "Activated") : t("No", "No")}
-                  </span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.fallbackActivated ? t("Активирован", "Activated") : t("Нет", "No")}</span>
                 </div>
               </CardContent>
             </Card>
@@ -286,17 +270,20 @@ export default function PlaygroundPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("Provider rail", "Provider rail")}</CardTitle>
+          <CardTitle>{t("Лента провайдеров", "Provider rail")}</CardTitle>
           <CardDescription>
-            {t("Текущий snapshot берется из Worker status endpoint и помогает проверить готовность цепочки.", "The current snapshot comes from the Worker status endpoint and verifies readiness across the provider chain.")}
+            {t(
+              "Текущий snapshot берется из Worker status endpoint и помогает проверить готовность цепочки провайдеров.",
+              "The current snapshot comes from the Worker status endpoint and verifies readiness across the provider chain."
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 lg:grid-cols-3">
           {statusData?.data.providers.map((provider) => (
-            <div key={provider.id} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+            <div key={provider.id} className="panel-subtle p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-2">
-                  <div className="font-display text-lg font-semibold text-white">{provider.label}</div>
+                  <div className="font-display text-lg font-semibold text-foreground">{provider.label}</div>
                   <div className="text-sm text-muted-foreground">{provider.description}</div>
                 </div>
                 <ProviderStatusPill status={provider.status} />
@@ -310,13 +297,13 @@ export default function PlaygroundPage() {
                 {provider.supportsStreaming ? (
                   <Badge variant="success">
                     <Waves className="h-3 w-3" />
-                    {t("streaming", "streaming")}
+                    {t("стриминг", "streaming")}
                   </Badge>
                 ) : null}
                 {provider.freeTierReady ? (
                   <Badge variant="warning">
                     <Sparkles className="h-3 w-3" />
-                    {t("free-tier ready", "free-tier ready")}
+                    {t("готов к free tier", "free-tier ready")}
                   </Badge>
                 ) : null}
               </div>

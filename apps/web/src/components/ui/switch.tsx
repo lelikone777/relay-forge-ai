@@ -9,7 +9,7 @@ export function Switch({ className, ...props }: ComponentPropsWithoutRef<typeof 
   return (
     <SwitchPrimitives.Root
       className={cn(
-        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-white/10 bg-white/5 transition-colors data-[state=checked]:bg-accent data-[state=unchecked]:bg-white/5",
+        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-border/70 bg-[hsl(var(--panel)/0.72)] transition-colors data-[state=checked]:bg-accent data-[state=unchecked]:bg-[hsl(var(--panel)/0.72)] dark:border-white/10 dark:bg-white/[0.04] dark:data-[state=unchecked]:bg-white/[0.04]",
         className
       )}
       {...props}
