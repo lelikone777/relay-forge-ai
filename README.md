@@ -177,14 +177,20 @@ On every push to `master`, GitHub Actions will:
 
 1. install dependencies and run type checks
 2. build the static frontend
-3. deploy the Worker
-4. deploy the Pages project (`relayforge-ai`)
+3. sync provider secrets from GitHub Secrets into the Cloudflare Worker
+4. deploy the Worker
+5. deploy the Pages project (`relayforge-ai`)
 
 Required GitHub repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 - `NEXT_PUBLIC_API_BASE_URL` (example: `https://relayforge-ai-api.2257855.workers.dev`)
+- `GROQ_API_KEY`
+- `SAMBANOVA_API_KEY`
+- `CEREBRAS_API_KEY`
+- `GEMINI_API_KEY`
+- `OPENROUTER_API_KEY`
 
 ## Folder structure
 
