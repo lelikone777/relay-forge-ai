@@ -20,7 +20,7 @@ function resolveProviderSequence(strategy: StrategyId, env: Env): ProviderId[] {
   }
 
   if (strategy === "auto") {
-    return ["groq", "openrouter", "mock"];
+    return ["groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"];
   }
 
   return [strategy];
@@ -53,8 +53,11 @@ function buildMeta({
   demoMode: boolean;
   env: Env;
 }): ResponseMeta {
+  const realProviderIds: ProviderId[] = ["groq", "sambanova", "cerebras", "gemini", "openrouter"];
   const degradedMode =
-    demoMode || fallbackActivated || !providers.groq.isConfigured(env) || !providers.openrouter.isConfigured(env);
+    demoMode ||
+    fallbackActivated ||
+    realProviderIds.some((providerId) => !providers[providerId].isConfigured(env));
 
   return {
     strategy,

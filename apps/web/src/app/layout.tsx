@@ -38,6 +38,7 @@ export const metadata: Metadata = {
     "Cloudflare Workers",
     "Cloudflare Pages",
     "Groq Free",
+    "SambaNova",
     "OpenRouter",
     "Fallback orchestration",
     "Streaming API"

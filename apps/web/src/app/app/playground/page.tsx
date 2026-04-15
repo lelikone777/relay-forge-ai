@@ -21,7 +21,7 @@ import { pickLocale } from "@/lib/i18n";
 import { useI18n } from "@/providers/i18n-provider";
 import { useSettings } from "@/providers/settings-provider";
 
-const strategies: StrategyId[] = ["auto", "groq", "openrouter", "mock"];
+const strategies: StrategyId[] = ["auto", "groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"];
 
 export default function PlaygroundPage() {
   const { locale } = useI18n();
@@ -34,7 +34,7 @@ export default function PlaygroundPage() {
   const [prompt, setPrompt] = useState(
     pickLocale(locale, {
       ru: "Сформируй короткий launch note для AI gateway, который автоматически переключается с Groq Free на OpenRouter и затем на mock-провайдера.",
-      en: "Draft a short launch note for an AI gateway that automatically falls back from Groq Free to OpenRouter and finally to a mock provider."
+      en: "Draft a short launch note for an AI gateway that automatically falls back from Groq Free to SambaNova, then Cerebras, Gemini, OpenRouter and finally a mock provider."
     })
   );
   const [strategy, setStrategy] = useState<StrategyId>(defaultStrategy);
@@ -139,8 +139,11 @@ export default function PlaygroundPage() {
                 <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Порядок fallback", "Fallback order")}</div>
                 <div className="mt-3 space-y-1 text-sm text-muted-foreground">
                   <div>1. Groq</div>
-                  <div>2. OpenRouter</div>
-                  <div>3. Mock</div>
+                  <div>2. SambaNova</div>
+                  <div>3. Cerebras</div>
+                  <div>4. Gemini</div>
+                  <div>5. OpenRouter</div>
+                  <div>6. Mock</div>
                 </div>
               </div>
               <div className="panel-subtle p-4">
@@ -278,7 +281,7 @@ export default function PlaygroundPage() {
             )}
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 lg:grid-cols-3">
+        <CardContent className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
           {statusData?.data.providers.map((provider) => (
             <div key={provider.id} className="panel-subtle p-5">
               <div className="flex items-start justify-between gap-3">

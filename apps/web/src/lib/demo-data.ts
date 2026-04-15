@@ -6,7 +6,7 @@ export const demoProviderStatus: ProviderStatusResponse = {
   success: true,
   data: {
     mode: "degraded",
-    routingOrder: ["groq", "openrouter", "mock"],
+    routingOrder: ["groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"],
     timestamp: now.toISOString(),
     providers: [
       {
@@ -21,10 +21,43 @@ export const demoProviderStatus: ProviderStatusResponse = {
         model: "llama-3.1-8b-instant"
       },
       {
+        id: "sambanova",
+        label: "SambaNova Cloud",
+        status: "fallback",
+        description: "OpenAI-compatible backup path that activates before Cerebras.",
+        latencyMs: 610,
+        freeTierReady: true,
+        supportsStreaming: true,
+        available: true,
+        model: "Meta-Llama-3.3-70B-Instruct"
+      },
+      {
+        id: "cerebras",
+        label: "Cerebras Inference",
+        status: "live",
+        description: "High-speed inference tier between SambaNova and Gemini.",
+        latencyMs: 250,
+        freeTierReady: true,
+        supportsStreaming: true,
+        available: true,
+        model: "llama3.1-8b"
+      },
+      {
+        id: "gemini",
+        label: "Gemini API",
+        status: "live",
+        description: "Managed Google API tier that stays ready before OpenRouter.",
+        latencyMs: 930,
+        freeTierReady: true,
+        supportsStreaming: true,
+        available: true,
+        model: "gemini-2.5-flash"
+      },
+      {
         id: "openrouter",
         label: "OpenRouter Free",
-        status: "fallback",
-        description: "Activated when Groq is constrained or temporarily unavailable.",
+        status: "live",
+        description: "Late free-tier fallback that stays ready before mock mode.",
         latencyMs: 860,
         freeTierReady: true,
         supportsStreaming: true,
@@ -49,7 +82,7 @@ export const demoProviderStatus: ProviderStatusResponse = {
 export const demoLogs: LogsResponse = {
   success: true,
   data: {
-    total: 6,
+    total: 8,
     items: [
       {
         id: "log_1",
@@ -69,7 +102,7 @@ export const demoLogs: LogsResponse = {
         promptPreview: "Explain how RelayForge normalizes rate-limit errors.",
         strategy: "auto",
         attemptedProvider: "groq",
-        finalProvider: "openrouter",
+        finalProvider: "sambanova",
         durationMs: 1024,
         status: "fallback",
         fallbackActivated: true,
@@ -79,9 +112,9 @@ export const demoLogs: LogsResponse = {
         id: "log_3",
         timestamp: new Date(now.getTime() - 1000 * 60 * 12).toISOString(),
         promptPreview: "Generate a launch note for a serverless AI gateway preview.",
-        strategy: "groq",
-        attemptedProvider: "groq",
-        finalProvider: "groq",
+        strategy: "cerebras",
+        attemptedProvider: "cerebras",
+        finalProvider: "cerebras",
         durationMs: 388,
         status: "success",
         fallbackActivated: false,
@@ -102,11 +135,11 @@ export const demoLogs: LogsResponse = {
       {
         id: "log_5",
         timestamp: new Date(now.getTime() - 1000 * 60 * 28).toISOString(),
-        promptPreview: "Return compact API docs for POST /api/v1/stream.",
-        strategy: "openrouter",
-        attemptedProvider: "openrouter",
-        finalProvider: "openrouter",
-        durationMs: 762,
+        promptPreview: "Return a concise status note for the SambaNova fallback tier.",
+        strategy: "sambanova",
+        attemptedProvider: "sambanova",
+        finalProvider: "sambanova",
+        durationMs: 684,
         status: "success",
         fallbackActivated: false,
         degradedMode: false
@@ -114,6 +147,30 @@ export const demoLogs: LogsResponse = {
       {
         id: "log_6",
         timestamp: new Date(now.getTime() - 1000 * 60 * 35).toISOString(),
+        promptPreview: "Draft a compact Cerebras latency summary.",
+        strategy: "cerebras",
+        attemptedProvider: "cerebras",
+        finalProvider: "cerebras",
+        durationMs: 262,
+        status: "success",
+        fallbackActivated: false,
+        degradedMode: false
+      },
+      {
+        id: "log_7",
+        timestamp: new Date(now.getTime() - 1000 * 60 * 38).toISOString(),
+        promptPreview: "Return a Gemini-ready moderation note for a public AI demo.",
+        strategy: "gemini",
+        attemptedProvider: "gemini",
+        finalProvider: "gemini",
+        durationMs: 944,
+        status: "success",
+        fallbackActivated: false,
+        degradedMode: false
+      },
+      {
+        id: "log_8",
+        timestamp: new Date(now.getTime() - 1000 * 60 * 41).toISOString(),
         promptPreview: "Simulate a malformed upstream response and normalized recovery.",
         strategy: "auto",
         attemptedProvider: "groq",
@@ -140,6 +197,9 @@ export const demoUsage: UsageResponse = {
     },
     providerDistribution: [
       { provider: "groq", value: 72 },
+      { provider: "sambanova", value: 18 },
+      { provider: "cerebras", value: 22 },
+      { provider: "gemini", value: 15 },
       { provider: "openrouter", value: 31 },
       { provider: "mock", value: 25 }
     ],
@@ -154,4 +214,3 @@ export const demoUsage: UsageResponse = {
     ]
   }
 };
-

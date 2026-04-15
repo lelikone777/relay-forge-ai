@@ -47,6 +47,13 @@ const providerTones = [
     icon: "text-blue-600 dark:text-blue-400",
     line: "from-blue-500 to-sky-500",
     badge: "border-blue-500/25 bg-blue-500/10 text-blue-700 dark:text-blue-300"
+  },
+  {
+    bar: "from-emerald-500/18 to-emerald-500/6 border-emerald-500/30",
+    text: "text-emerald-700 dark:text-emerald-300",
+    icon: "text-emerald-600 dark:text-emerald-400",
+    line: "from-emerald-500 to-teal-500",
+    badge: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
   }
 ];
 
@@ -85,7 +92,7 @@ export default function HomePage() {
       title: t("Управляемый fallback", "Orchestrated fallback"),
       description: t(
         "Цепочка Groq -> OpenRouter -> Mock включается только тогда, когда апстрим не может чисто обслужить запрос.",
-        "The Groq -> OpenRouter -> Mock chain activates only when the upstream path cannot serve a request cleanly."
+        "The Groq -> SambaNova -> Cerebras -> Gemini -> OpenRouter -> Mock chain activates only when the upstream path cannot serve a request cleanly."
       )
     },
     {
@@ -176,7 +183,7 @@ export default function HomePage() {
       ),
       points: [
         t("Маршруты /chat, /stream, /status, /logs, /usage", "/chat, /stream, /status, /logs and /usage routes"),
-        t("Fallback Groq -> OpenRouter -> Mock", "Groq -> OpenRouter -> Mock fallback")
+        t("Fallback Groq -> SambaNova -> Cerebras -> Gemini -> OpenRouter -> Mock", "Groq -> SambaNova -> Cerebras -> Gemini -> OpenRouter -> Mock fallback")
       ],
       tone: "border-violet-500/25 bg-violet-500/10 text-violet-700 dark:text-violet-300"
     },
@@ -615,7 +622,7 @@ export default function HomePage() {
                   <Cloud className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                   <div className="mt-3 font-medium text-foreground">{t("Cloudflare Worker", "Cloudflare Worker")}</div>
                   <div className="mt-1 text-xs text-muted-foreground">{t("Чат, стриминг, fallback и secrets", "Chat, streaming, fallback and secrets")}</div>
-                  <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                     {status.providers.map((provider, index) => (
                       <div key={provider.id} className={`rounded-[1rem] border px-3 py-2 text-center text-xs font-medium ${providerTones[index]?.badge ?? providerTones[0].badge}`}>
                         {provider.label}

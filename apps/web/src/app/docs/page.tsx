@@ -108,7 +108,7 @@ export default function DocsPage() {
       title: t("Fallback-логика", "Fallback logic"),
       description: t(
         "Auto mode начинает с Groq, затем переключается на OpenRouter и при необходимости на mock provider.",
-        "Auto mode starts with Groq, then promotes to OpenRouter and finally to the mock provider when needed."
+        "Auto mode starts with Groq, then promotes to SambaNova, Cerebras, Gemini, OpenRouter and finally the mock provider when needed."
       )
     },
     {
@@ -134,7 +134,7 @@ export default function DocsPage() {
           </div>
 
           <div className="shell-container space-y-8">
-            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="grid gap-8">
               <div className="space-y-6">
                 <div className="eyebrow">
                   <FileCode2 className="h-3.5 w-3.5" />
@@ -232,7 +232,7 @@ export default function DocsPage() {
         </section>
 
         <section className="landing-section">
-          <div className="shell-container grid gap-4 xl:grid-cols-2">
+          <div className="shell-container grid gap-4">
             <Card className="p-6">
               <CardHeader className="px-0 pt-0">
                 <CardTitle>{t("Пример запроса", "Request example")}</CardTitle>
@@ -256,7 +256,7 @@ export default function DocsPage() {
         </section>
 
         <section className="landing-section">
-          <div className="shell-container grid gap-4 xl:grid-cols-2">
+          <div className="shell-container grid gap-4">
             <Card className="p-6">
               <CardHeader className="px-0 pt-0">
                 <CardTitle>{t("Потоковые заметки", "Streaming notes")}</CardTitle>

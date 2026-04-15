@@ -40,7 +40,10 @@ This split is intentional. The frontend stays static and cheap to host, while al
 ## Supported providers
 
 - Groq Free: primary low-latency provider
-- OpenRouter free models: fallback provider
+- SambaNova Cloud: secondary OpenAI-compatible provider
+- Cerebras Inference: high-speed inference fallback
+- Gemini API: managed Google fallback tier
+- OpenRouter free models: late free-tier fallback provider
 - Mock / Demo provider: guaranteed public demo safety net
 
 ## Fallback behavior
@@ -48,8 +51,11 @@ This split is intentional. The frontend stays static and cheap to host, while al
 `Auto` strategy follows this order:
 
 1. Try Groq first
-2. If Groq times out, is rate-limited, unavailable, or returns malformed upstream data, try OpenRouter
-3. If OpenRouter also fails or is not configured, switch to the mock/demo provider
+2. If Groq times out, is rate-limited, unavailable, or returns malformed upstream data, try SambaNova
+3. If SambaNova also fails or is not configured, try Cerebras
+4. If Cerebras also fails or is not configured, try Gemini
+5. If Gemini also fails or is not configured, try OpenRouter
+6. If OpenRouter also fails or is not configured, switch to the mock/demo provider
 
 Every successful response includes metadata for:
 
@@ -144,6 +150,9 @@ Deploy `apps/worker` with Wrangler.
 ```bash
 cd apps/worker
 wrangler secret put GROQ_API_KEY
+wrangler secret put SAMBANOVA_API_KEY
+wrangler secret put CEREBRAS_API_KEY
+wrangler secret put GEMINI_API_KEY
 wrangler secret put OPENROUTER_API_KEY
 wrangler deploy
 ```
@@ -152,6 +161,9 @@ Recommended Worker vars:
 
 - `ALLOWED_ORIGIN`
 - `GROQ_MODEL`
+- `SAMBANOVA_MODEL`
+- `CEREBRAS_MODEL`
+- `GEMINI_MODEL`
 - `OPENROUTER_MODEL`
 - `OPENROUTER_HTTP_REFERER`
 - `OPENROUTER_APP_TITLE`

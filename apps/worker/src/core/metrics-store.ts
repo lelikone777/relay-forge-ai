@@ -1,6 +1,6 @@
 import type { ErrorCode, LogEntry, ModeId, ProviderId, StrategyId, UsageResponse } from "@relayforge/shared";
 
-import { PROVIDER_LABELS } from "@relayforge/shared";
+import { PROVIDER_LABELS, PROVIDER_PRIORITY } from "@relayforge/shared";
 
 type ProviderHealth = Record<
   ProviderId,
@@ -37,7 +37,7 @@ const seedLogs = (): LogEntry[] => {
       promptPreview: "Explain how RelayForge normalizes rate-limit errors.",
       strategy: "auto",
       attemptedProvider: "groq",
-      finalProvider: "openrouter",
+      finalProvider: "sambanova",
       durationMs: 1040,
       status: "fallback",
       fallbackActivated: true,
@@ -47,9 +47,9 @@ const seedLogs = (): LogEntry[] => {
       id: "seed_3",
       timestamp: "2026-04-13T08:27:00.000Z",
       promptPreview: "Generate a launch note for a serverless AI gateway preview.",
-      strategy: "groq",
-      attemptedProvider: "groq",
-      finalProvider: "groq",
+      strategy: "cerebras",
+      attemptedProvider: "cerebras",
+      finalProvider: "cerebras",
       durationMs: 389,
       status: "success",
       fallbackActivated: false,
@@ -70,11 +70,10 @@ const seedLogs = (): LogEntry[] => {
   ];
 };
 
-const initialHealth: ProviderHealth = {
-  groq: { successes: 0, failures: 0, lastLatencyMs: 0 },
-  openrouter: { successes: 0, failures: 0, lastLatencyMs: 0 },
-  mock: { successes: 0, failures: 0, lastLatencyMs: 0 }
-};
+const initialHealth = PROVIDER_PRIORITY.reduce((acc, provider) => {
+  acc[provider] = { successes: 0, failures: 0, lastLatencyMs: 0 };
+  return acc;
+}, {} as ProviderHealth);
 
 const state: MetricsState = {
   logs: seedLogs(),
@@ -162,14 +161,12 @@ export function getLogs() {
 
 export function getMode({
   forceDemo,
-  groqConfigured,
-  openRouterConfigured
+  configuredProviders
 }: {
   forceDemo: boolean;
-  groqConfigured: boolean;
-  openRouterConfigured: boolean;
+  configuredProviders: ProviderId[];
 }): ModeId {
-  if (forceDemo || (!groqConfigured && !openRouterConfigured)) {
+  if (forceDemo || configuredProviders.length === 0) {
     return "demo";
   }
 
@@ -182,7 +179,7 @@ export function getMode({
 
 export function getUsage(): UsageResponse["data"] {
   const successfulLogs = state.logs.filter((item) => item.status !== "error");
-  const providerDistribution = (["groq", "openrouter", "mock"] as ProviderId[]).map((provider) => ({
+  const providerDistribution = PROVIDER_PRIORITY.map((provider) => ({
     provider,
     value: state.logs.filter((item) => item.finalProvider === provider).length
   }));

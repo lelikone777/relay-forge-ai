@@ -43,8 +43,8 @@ export default function StatusPage() {
         eyebrow={t("Состояние провайдеров", "Provider Health")}
         title={t("Готовность каждого уровня цепочки", "Observe readiness across every provider tier")}
         description={t(
-          "Страница показывает реальный health snapshot цепочки Groq -> OpenRouter -> Mock, а не декоративный список без связи с backend.",
-          "This page shows the real health snapshot for the Groq -> OpenRouter -> Mock chain instead of a decorative list disconnected from the backend."
+          "Страница показывает реальный health snapshot цепочки Groq -> SambaNova -> OpenRouter -> Mock, а не декоративный список без связи с backend.",
+          "This page shows the real health snapshot for the Groq -> SambaNova -> OpenRouter -> Mock chain instead of a decorative list disconnected from the backend."
         )}
         actions={<ModePill mode={data.data.mode} />}
       />
@@ -56,7 +56,12 @@ export default function StatusPage() {
           hint={t("Адаптеры отвечают на health check.", "Adapters responding to health checks.")}
           icon={<ShieldCheck className="h-5 w-5" />}
         />
-        <MetricCard label={t("Порядок маршрутизации", "Routing order")} value="3 tiers" hint="Groq -> OpenRouter -> Mock" icon={<ArrowRight className="h-5 w-5" />} />
+        <MetricCard
+          label={t("Порядок маршрутизации", "Routing order")}
+          value={`${data.data.routingOrder.length} tiers`}
+          hint="Groq -> SambaNova -> Cerebras -> Gemini -> OpenRouter -> Mock"
+          icon={<ArrowRight className="h-5 w-5" />}
+        />
         <MetricCard
           label={t("Потоковые пути", "Streaming paths")}
           value={`${data.data.providers.filter((item) => item.supportsStreaming).length}`}
@@ -80,6 +85,12 @@ export default function StatusPage() {
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <Badge variant="accent">Groq</Badge>
               <ArrowRight className="h-4 w-4" />
+              <Badge>SambaNova</Badge>
+              <ArrowRight className="h-4 w-4" />
+              <Badge>Cerebras</Badge>
+              <ArrowRight className="h-4 w-4" />
+              <Badge>Gemini</Badge>
+              <ArrowRight className="h-4 w-4" />
               <Badge variant="warning">OpenRouter</Badge>
               <ArrowRight className="h-4 w-4" />
               <Badge variant="success">Mock / Demo</Badge>
@@ -87,7 +98,10 @@ export default function StatusPage() {
             <div className="panel-subtle p-5">
               <div className="space-y-3 text-sm text-muted-foreground">
                 <div>{t("Основной путь: низколатентный Groq в режиме auto.", "Primary path: low-latency Groq in auto mode.")}</div>
-                <div>{t("Fallback-уровень: OpenRouter берет запрос при лимитах, таймаутах или некорректном ответе апстрима.", "Fallback tier: OpenRouter takes over on limits, timeouts or malformed upstream output.")}</div>
+                <div>{t("Второй tier: SambaNova берет запрос, если Groq упирается в лимиты, таймауты или некорректный ответ апстрима.", "Second tier: SambaNova takes over when Groq hits limits, timeouts or malformed upstream output.")}</div>
+                <div>{t("Третий tier: Cerebras добавляет быстрый inference path, если верхние уровни не могут обслужить запрос.", "Third tier: Cerebras adds a fast inference path if the earlier tiers cannot serve the request.")}</div>
+                <div>{t("Четвертый tier: Gemini остается управляемым fallback-путем перед OpenRouter.", "Fourth tier: Gemini remains a managed fallback path before OpenRouter.")}</div>
+                <div>{t("Пятый tier: OpenRouter закрывает остаточный free-tier fallback перед переходом в mock.", "Fifth tier: OpenRouter handles the last free-tier fallback before mock mode.")}</div>
                 <div>{t("Страховка: mock сохраняет публичный workspace рабочим даже при ограничениях реальных провайдеров.", "Safety net: mock keeps the public workspace usable even if real providers are constrained.")}</div>
               </div>
             </div>
@@ -108,13 +122,15 @@ export default function StatusPage() {
               <div className="flex flex-wrap items-center gap-3">
                 {data.data.routingOrder.map((provider, index) => (
                   <div key={provider} className="flex items-center gap-3">
-                    <Badge variant={index === 0 ? "accent" : index === 1 ? "warning" : "success"}>{provider}</Badge>
+                    <Badge variant={index === 0 ? "accent" : index === data.data.routingOrder.length - 1 ? "success" : index === 2 ? "warning" : "default"}>
+                      {provider}
+                    </Badge>
                     {index < data.data.routingOrder.length - 1 ? <ArrowRight className="h-4 w-4 text-muted-foreground" /> : null}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {data.data.providers.map((provider) => (
                 <div key={provider.id} className="panel-subtle p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -132,7 +148,7 @@ export default function StatusPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-4">
         {data.data.providers.map((provider) => (
           <Card key={provider.id}>
             <CardHeader>

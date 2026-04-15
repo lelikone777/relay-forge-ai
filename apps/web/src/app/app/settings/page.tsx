@@ -13,7 +13,7 @@ import { pickLocale } from "@/lib/i18n";
 import { useI18n } from "@/providers/i18n-provider";
 import { useSettings } from "@/providers/settings-provider";
 
-const strategies = ["auto", "groq", "openrouter", "mock"] as const;
+const strategies = ["auto", "groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"] as const;
 
 export default function SettingsPage() {
   const { locale } = useI18n();
@@ -59,7 +59,7 @@ export default function SettingsPage() {
               <div className="mt-2">
                 {t(
                   "Он отражает реальную историю gateway: сначала Groq Free, затем OpenRouter и затем demo-safe mock provider.",
-                  "It preserves the real gateway story by preferring Groq Free, then OpenRouter, then the demo-safe mock provider."
+                  "It preserves the real gateway story by preferring Groq Free, then SambaNova Cloud, then Cerebras, then Gemini, then OpenRouter, then the demo-safe mock provider."
                 )}
               </div>
             </div>

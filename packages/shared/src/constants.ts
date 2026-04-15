@@ -1,6 +1,6 @@
-export const PROVIDERS = ["groq", "openrouter", "mock"] as const;
+export const PROVIDERS = ["groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"] as const;
 
-export const STRATEGIES = ["auto", "groq", "openrouter", "mock"] as const;
+export const STRATEGIES = ["auto", "groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"] as const;
 
 export const ERROR_CODES = [
   "validation_error",
@@ -15,11 +15,14 @@ export const ERROR_CODES = [
 
 export const PROVIDER_LABELS: Record<(typeof PROVIDERS)[number], string> = {
   groq: "Groq Free",
+  sambanova: "SambaNova Cloud",
+  cerebras: "Cerebras Inference",
+  gemini: "Gemini API",
   openrouter: "OpenRouter Free",
   mock: "Mock / Demo"
 };
 
-export const PROVIDER_PRIORITY = ["groq", "openrouter", "mock"] as const;
+export const PROVIDER_PRIORITY = ["groq", "sambanova", "cerebras", "gemini", "openrouter", "mock"] as const;
 
 export const STATUS_VARIANTS = [
   "live",
@@ -30,4 +33,3 @@ export const STATUS_VARIANTS = [
 ] as const;
 
 export const MODES = ["normal", "degraded", "demo"] as const;
-
