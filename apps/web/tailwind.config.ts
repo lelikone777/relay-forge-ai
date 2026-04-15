@@ -33,13 +33,15 @@ const config: Config = {
         "3xl": "2rem"
       },
       boxShadow: {
-        panel: "0 16px 48px -18px rgba(15, 23, 42, 0.22)",
-        glow: "0 0 0 1px rgba(77, 123, 255, 0.18), 0 18px 60px -28px rgba(77, 123, 255, 0.55)",
+        panel:
+          "0 0 0 1px rgba(255,255,255,0.05), 0 24px 80px -42px rgba(6,182,212,0.45), 0 24px 90px -54px rgba(124,58,237,0.45)",
+        glow:
+          "0 0 0 1px rgba(34,211,238,0.18), 0 16px 54px -28px rgba(6,182,212,0.55), 0 16px 70px -40px rgba(124,58,237,0.45)",
         inset: "inset 0 1px 0 rgba(255,255,255,0.06)"
       },
       backgroundImage: {
         "hero-grid":
-          "linear-gradient(to right, rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.08) 1px, transparent 1px)"
+          "linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)"
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -48,7 +50,8 @@ const config: Config = {
       },
       animation: {
         shimmer: "shimmer 2.8s linear infinite",
-        blink: "blink 1s step-end infinite"
+        blink: "blink 1s step-end infinite",
+        float: "float 8s ease-in-out infinite"
       },
       keyframes: {
         shimmer: {
@@ -57,6 +60,10 @@ const config: Config = {
         },
         blink: {
           "50%": { opacity: "0" }
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" }
         }
       }
     }

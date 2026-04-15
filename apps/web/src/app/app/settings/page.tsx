@@ -17,6 +17,7 @@ const strategies = ["auto", "groq", "openrouter", "mock"] as const;
 
 export default function SettingsPage() {
   const { locale } = useI18n();
+  const t = (ru: string, en: string) => pickLocale(locale, { ru, en });
   const { resolvedTheme } = useTheme();
   const apiBaseUrl = getApiBaseUrl();
   const {
@@ -31,26 +32,20 @@ export default function SettingsPage() {
   return (
     <div className="min-w-0 space-y-8">
       <PageIntro
-        eyebrow={pickLocale(locale, { ru: "Настройки Workspace", en: "Workspace Settings" })}
-        title={pickLocale(locale, {
-          ru: "Настройте стратегию по умолчанию и поведение демо-режима",
-          en: "Tune default routing and explain demo behavior"
-        })}
-        description={pickLocale(locale, {
-          ru: "Настройки намеренно легкие для надежности публичного демо: один workspace, предсказуемые дефолты и без auth-сложности.",
-          en: "Settings stay intentionally lightweight to preserve public reliability: one workspace, predictable defaults and no auth complexity."
-        })}
+        eyebrow={t("Workspace Settings", "Workspace Settings")}
+        title={t("Tune routing defaults without moving secrets to the client", "Tune routing defaults without moving secrets to the client")}
+        description={t(
+          "Эти настройки меняют только клиентское поведение и UI-предпочтения. Ключи провайдеров и реальная оркестрация остаются внутри Worker.",
+          "These settings only change client behavior and UI preferences. Provider secrets and real orchestration remain inside the Worker."
+        )}
       />
 
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <Card>
           <CardHeader>
-            <CardTitle>{pickLocale(locale, { ru: "Стратегия по умолчанию", en: "Default strategy" })}</CardTitle>
+            <CardTitle>{t("Default strategy", "Default strategy")}</CardTitle>
             <CardDescription>
-              {pickLocale(locale, {
-                ru: "Определяет начальный режим маршрутизации для редактора в песочнице.",
-                en: "Controls the initial routing mode for the playground composer."
-              })}
+              {t("Определяет начальный routing mode для playground composer.", "Controls the initial routing mode for the playground composer.")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -66,15 +61,13 @@ export default function SettingsPage() {
                 </Button>
               ))}
             </div>
-            <div className="rounded-2xl border border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
-              <div className="font-medium text-foreground">
-                {pickLocale(locale, { ru: "Auto остается рекомендованным режимом.", en: "Auto remains the recommended mode." })}
-              </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 text-sm text-muted-foreground">
+              <div className="font-medium text-foreground">{t("Auto remains the recommended mode.", "Auto remains the recommended mode.")}</div>
               <div className="mt-2">
-                {pickLocale(locale, {
-                  ru: "Он сохраняет корректную gateway-логику: сначала Groq Free, затем OpenRouter и затем demo-safe mock-провайдер.",
-                  en: "It preserves the gateway story by preferring Groq Free, then OpenRouter, then the demo-safe mock provider."
-                })}
+                {t(
+                  "Он отражает реальную историю gateway: сначала Groq Free, затем OpenRouter и затем demo-safe mock provider.",
+                  "It preserves the real gateway story by preferring Groq Free, then OpenRouter, then the demo-safe mock provider."
+                )}
               </div>
             </div>
           </CardContent>
@@ -82,48 +75,29 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{pickLocale(locale, { ru: "Параметры runtime", en: "Runtime preferences" })}</CardTitle>
-            <CardDescription>
-              {pickLocale(locale, {
-                ru: "Только client-side дефолты. Секреты остаются в Worker.",
-                en: "Client-side defaults only. Secrets remain on the Worker."
-              })}
-            </CardDescription>
+            <CardTitle>{t("Runtime preferences", "Runtime preferences")}</CardTitle>
+            <CardDescription>{t("Client-side defaults only. Secrets remain on the Worker.", "Client-side defaults only. Secrets remain on the Worker.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+            <div className="flex items-center justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <div className="min-w-0">
-                <div className="font-medium text-foreground">
-                  {pickLocale(locale, { ru: "Предпочтение стриминга", en: "Streaming preference" })}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {pickLocale(locale, {
-                    ru: "Использовать `POST /api/v1/stream` по умолчанию в песочнице.",
-                    en: "Use `POST /api/v1/stream` by default in the playground."
-                  })}
-                </div>
+                <div className="font-medium text-foreground">{t("Streaming preference", "Streaming preference")}</div>
+                <div className="text-sm text-muted-foreground">{t("Use POST /api/v1/stream by default in the playground.", "Use POST /api/v1/stream by default in the playground.")}</div>
               </div>
               <Switch checked={streamingEnabled} onCheckedChange={setStreamingEnabled} />
             </div>
-            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+            <div className="flex items-center justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <div className="min-w-0">
-                <div className="font-medium text-foreground">
-                  {pickLocale(locale, { ru: "Ненавязчивые demo-подсказки", en: "Subtle demo hints" })}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {pickLocale(locale, {
-                    ru: "Показывать индикаторы demo-режима без визуального шума.",
-                    en: "Keep demo-mode indicators visible but low-noise."
-                  })}
-                </div>
+                <div className="font-medium text-foreground">{t("Subtle demo hints", "Subtle demo hints")}</div>
+                <div className="text-sm text-muted-foreground">{t("Keep demo-mode indicators visible but low-noise.", "Keep demo-mode indicators visible but low-noise.")}</div>
               </div>
               <Switch checked={subtleDemoHints} onCheckedChange={setSubtleDemoHints} />
             </div>
-            <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
+            <div className="flex items-center justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <div className="min-w-0">
-                <div className="font-medium text-foreground">{pickLocale(locale, { ru: "Тема", en: "Theme" })}</div>
+                <div className="font-medium text-foreground">{t("Theme", "Theme")}</div>
                 <div className="text-sm text-muted-foreground">
-                  {pickLocale(locale, { ru: "Текущая тема", en: "Current theme" })}: {resolvedTheme ?? pickLocale(locale, { ru: "загрузка", en: "loading" })}
+                  {t("Current theme", "Current theme")}: {resolvedTheme ?? t("loading", "loading")}
                 </div>
               </div>
               <ThemeToggle />
@@ -135,45 +109,33 @@ export default function SettingsPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>{pickLocale(locale, { ru: "Целевая платформа frontend", en: "Frontend target" })}</CardTitle>
+            <CardTitle>{t("Frontend target", "Frontend target")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <div className="font-medium text-foreground">
-              {pickLocale(locale, { ru: "Cloudflare Pages + Workers", en: appConfig.environment })}
-            </div>
-            <div>
-              {pickLocale(locale, {
-                ru: "Статический Next.js export, оптимизированный под Cloudflare Pages.",
-                en: "Static Next.js export optimized for Cloudflare Pages."
-              })}
-            </div>
+            <div className="font-medium text-foreground">{appConfig.environment}</div>
+            <div>{t("Static Next.js export optimized for Cloudflare Pages.", "Static Next.js export optimized for Cloudflare Pages.")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{pickLocale(locale, { ru: "Базовый URL API", en: "API base URL" })}</CardTitle>
+            <CardTitle>{t("API base URL", "API base URL")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <div className="font-mono text-xs text-foreground break-all">{apiBaseUrl}</div>
-            <div>
-              {pickLocale(locale, {
-                ru: "Вставляется на этапе сборки через `NEXT_PUBLIC_API_BASE_URL`.",
-                en: "Injected at build time through `NEXT_PUBLIC_API_BASE_URL`."
-              })}
-            </div>
+            <div>{t("Injected at build time through NEXT_PUBLIC_API_BASE_URL.", "Injected at build time through NEXT_PUBLIC_API_BASE_URL.")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{pickLocale(locale, { ru: "Архитектура демо", en: "Demo architecture" })}</CardTitle>
+            <CardTitle>{t("Security boundary", "Security boundary")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <Badge variant="accent">{pickLocale(locale, { ru: "Без auth-стены", en: "No auth wall" })}</Badge>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <Badge variant="accent">{t("Worker only", "Worker only")}</Badge>
             <div>
-              {pickLocale(locale, {
-                ru: "Один общий workspace поддерживает надежность публичного демо при free-tier ограничениях.",
-                en: "Single shared workspace keeps the public demo reliable under free-tier constraints."
-              })}
+              {t(
+                "Ключи Groq и OpenRouter не попадают в frontend env. Клиент знает только публичный API base URL.",
+                "Groq and OpenRouter keys never move into frontend env. The client only knows the public API base URL."
+              )}
             </div>
           </CardContent>
         </Card>

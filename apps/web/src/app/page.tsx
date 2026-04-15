@@ -1,32 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
   ArrowRight,
   ChartNoAxesCombined,
-  CloudCog,
-  Cpu,
-  Layers3,
+  Cloud,
+  DatabaseZap,
+  GitBranch,
   ShieldCheck,
-  Sparkles,
   Waves,
   Zap
 } from "lucide-react";
 import Link from "next/link";
 
+import { ModePill, ProviderStatusPill } from "@/components/status-pill";
+import { ProviderDistributionChart } from "@/components/charts/provider-distribution-chart";
+import { UsageLatencyChart } from "@/components/charts/usage-latency-chart";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchProviderStatus, fetchUsage } from "@/lib/api";
+import { demoProviderStatus, demoUsage } from "@/lib/demo-data";
+import { formatDuration, formatNumber } from "@/lib/format";
 import { pickLocale } from "@/lib/i18n";
 import { useI18n } from "@/providers/i18n-provider";
 
 const fadeIn = {
-  initial: { opacity: 0, y: 18 },
+  initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.25 },
+  viewport: { once: true, amount: 0.2 },
   transition: { duration: 0.45 }
 };
 
@@ -34,105 +40,126 @@ export default function HomePage() {
   const { locale } = useI18n();
   const t = (ru: string, en: string) => pickLocale(locale, { ru, en });
 
+  const { data: statusQuery } = useQuery({
+    queryKey: ["provider-status"],
+    queryFn: fetchProviderStatus
+  });
+  const { data: usageQuery } = useQuery({
+    queryKey: ["usage"],
+    queryFn: fetchUsage
+  });
+
+  const status = statusQuery?.data ?? demoProviderStatus.data;
+  const usage = usageQuery?.data ?? demoUsage.data;
+  const successRate =
+    usage.totals.requests > 0 ? Math.round((usage.totals.successful / usage.totals.requests) * 100) : 0;
+  const activeProviders = status.providers.filter((provider) => provider.available).length;
+  const fallbackRate =
+    usage.totals.requests > 0 ? Math.round((usage.totals.fallbackActivations / usage.totals.requests) * 100) : 0;
+
   const featureCards = [
     {
-      title: t("Единая AI API-поверхность", "Unified AI API surface"),
+      icon: GitBranch,
+      title: t("Единая AI API-поверхность", "One unified AI API surface"),
       description: t(
-        "Отправляйте промпты в едином формате запроса, а RelayForge нормализует поведение разных провайдеров.",
-        "Send prompts through one consistent request shape while RelayForge normalizes provider-specific behavior."
-      ),
-      icon: Layers3
+        "Один контракт запроса для разных провайдеров, без переноса ключей на клиент.",
+        "One request contract across providers, without moving secrets into the client."
+      )
     },
     {
-      title: t("Стриминг в реальном времени", "Real-time streaming"),
+      icon: Waves,
+      title: t("Реальный SSE-стриминг", "Real SSE streaming"),
       description: t(
-        "Постепенная отрисовка токенов через SSE-совместимые стримы со стабильным layout и аккуратной обработкой прерываний.",
-        "Progressive token rendering over SSE-compatible streams with stable layout and clean interruption handling."
-      ),
-      icon: Waves
+        "Токены приходят постепенно через Worker stream endpoint и отображаются без скачков layout.",
+        "Tokens arrive progressively through the Worker streaming endpoint with stable UI rendering."
+      )
     },
     {
-      title: t("Автоматический fallback", "Automatic fallback"),
+      icon: ShieldCheck,
+      title: t("Fallback orchestration", "Fallback orchestration"),
       description: t(
-        "Основной путь: Groq Free. При проблемах включаются free-модели OpenRouter, а mock-режим гарантирует рабочее публичное демо.",
-        "Groq Free is preferred, OpenRouter free models take over when needed, and mock mode guarantees a working public demo."
-      ),
-      icon: ArrowRight
+        "Groq идет первым, OpenRouter подхватывает при сбое, mock остается safety-net для публичного демо.",
+        "Groq leads, OpenRouter takes over on failure, and mock remains the public-demo safety net."
+      )
     },
     {
+      icon: Activity,
       title: t("Нормализованные ошибки", "Normalized errors"),
       description: t(
-        "Ошибки валидации, rate-limit, timeout и некорректный upstream-ответ возвращаются в едином контракте.",
-        "Validation, rate-limit, timeout and upstream-shape failures are returned through one coherent contract."
-      ),
-      icon: ShieldCheck
+        "UI получает единый error shape для validation, upstream failures и прерванного стрима.",
+        "The UI receives one coherent error shape for validation, upstream failures and interrupted streams."
+      )
     },
     {
-      title: t("Видимость провайдеров", "Provider visibility"),
+      icon: ChartNoAxesCombined,
+      title: t("Наблюдаемость поверх gateway", "Gateway observability"),
       description: t(
-        "Показывайте порядок маршрутизации, режим системы, задержку и готовность провайдеров в observability-стиле.",
-        "Expose routing order, current mode, latency and provider readiness in a dashboard that feels operational, not decorative."
-      ),
-      icon: Activity
+        "Статусы, логи и usage analytics собираются в один интерфейс и показывают реальную маршрутизацию.",
+        "Status, logs and usage analytics come together in one interface and expose real routing behavior."
+      )
     },
     {
-      title: t("Архитектура free-tier-first", "Free-tier-first architecture"),
+      icon: Cloud,
+      title: t("Serverless deployment", "Serverless deployment"),
       description: t(
-        "Статический frontend на Pages и API на Worker дают публичный, дешевый и устойчивый деплой при ограниченных квотах.",
-        "Static Pages frontend plus Worker API keeps deployment public, cheap and resilient under constrained quotas."
-      ),
-      icon: CloudCog
-    }
-  ];
-
-  const providerCards = [
-    {
-      title: "Groq Free",
-      subtitle: t("Основной путь", "Primary path"),
-      detail: t("Низкая задержка по умолчанию для лучшего real-time UX.", "Low-latency default for the best real-time UX."),
-      badge: "primary"
-    },
-    {
-      title: "OpenRouter Free",
-      subtitle: t("Fallback-уровень", "Fallback tier"),
-      detail: t(
-        "Включается, когда Groq ограничен, временно недоступен или возвращает некорректный ответ.",
-        "Activated when Groq is rate-limited, unavailable or malformed."
-      ),
-      badge: "secondary"
-    },
-    {
-      title: "Mock / Demo",
-      subtitle: t("Страховочный слой", "Safety net"),
-      detail: t(
-        "Псевдо-стриминг, который гарантирует тестируемость публичного демо.",
-        "Pseudo-streaming provider that guarantees the public demo remains testable."
-      ),
-      badge: "demo"
+        "Next.js frontend плюс Cloudflare Worker backend сохраняют архитектуру легкой и безопасной.",
+        "A Next.js frontend and Cloudflare Worker backend keep the architecture lean and safe."
+      )
     }
   ];
 
   const workflowCards = [
     {
-      title: t("Как это работает", "How it works"),
-      description: t("1. Валидация и нормализация запроса.", "1. Validate and normalize the request."),
-      icon: Cpu
+      title: t("1. Нормализация запроса", "1. Normalize the request"),
+      description: t(
+        "Frontend отправляет один typed payload, а Worker валидирует стратегию, стриминг и лимиты.",
+        "The frontend sends one typed payload and the Worker validates strategy, streaming and limits."
+      )
     },
     {
-      title: t("Стриминг-путь", "Streaming path"),
+      title: t("2. Выбор провайдера", "2. Choose a provider"),
       description: t(
-        "2. Открывается provider-stream и токены отдаются постепенно.",
-        "2. Open a provider stream and surface tokens progressively."
-      ),
-      icon: Waves
+        "Auto-маршрутизация идет по цепочке Groq -> OpenRouter -> Mock и фиксирует attempted/final provider.",
+        "Auto routing walks the chain Groq -> OpenRouter -> Mock and records attempted/final provider."
+      )
     },
     {
-      title: t("Resilience-путь", "Resilience path"),
+      title: t("3. Поток и метаданные", "3. Stream plus metadata"),
       description: t(
-        "3. При ошибке upstream запрос поднимается на следующий уровень.",
-        "3. Promote to the next tier when the upstream path fails cleanly."
-      ),
-      icon: ShieldCheck
+        "Ответ отдается через SSE или JSON fallback, а метаданные формируют status/logs/usage представление.",
+        "Responses are delivered through SSE or JSON fallback while metadata powers status, logs and usage views."
+      )
+    }
+  ];
+
+  const architectureCards = [
+    {
+      title: t("Frontend", "Frontend"),
+      description: t(
+        "Next.js App Router, TanStack Query, Recharts и новый визуальный слой без mock-копирайта.",
+        "Next.js App Router, TanStack Query, Recharts and a rebuilt visual layer without mock marketing claims."
+      )
+    },
+    {
+      title: t("Worker", "Worker"),
+      description: t(
+        "Секреты провайдеров и вся оркестрация остаются только на серверной стороне.",
+        "Provider secrets and all orchestration remain server-side only."
+      )
+    },
+    {
+      title: t("Shared contracts", "Shared contracts"),
+      description: t(
+        "Типы запросов, ответов, ошибок и usage contracts используются и фронтендом, и backend-слоем.",
+        "Request, response, error and usage contracts are shared by the frontend and backend."
+      )
+    },
+    {
+      title: t("State today", "State today"),
+      description: t(
+        "Логи и usage остаются in-memory в текущей сборке, поэтому интерфейс не обещает durable storage или SLA.",
+        "Logs and usage stay in-memory in the current build, so the interface avoids promising durable storage or SLAs."
+      )
     }
   ];
 
@@ -141,117 +168,95 @@ export default function HomePage() {
       <SiteHeader />
 
       <main>
-        <section className="relative overflow-hidden border-b border-border/60">
-          <div className="shell-container section-space grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="relative overflow-hidden border-b border-white/10">
+          <div className="absolute inset-0 surface-grid grid-fade opacity-50" />
+          <div className="shell-container section-space relative grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <motion.div {...fadeIn} className="space-y-8">
-              <Badge variant="accent">{t("Unified AI Gateway на Free-Tier Infrastructure", "Unified AI Gateway on Free-Tier Infrastructure")}</Badge>
+              <Badge variant="accent">{t("Production-Ready AI Infrastructure", "Production-Ready AI Infrastructure")}</Badge>
               <div className="space-y-6">
-                <h1 className="text-safe font-display text-4xl font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-                  {t(
-                    "RelayForge AI маршрутизирует, стримит и восстанавливается как реальный AI infrastructure продукт.",
-                    "RelayForge AI routes, streams and recovers like a real AI infrastructure product."
-                  )}
+                <h1 className="text-safe font-display text-5xl font-semibold tracking-tight text-balance text-white sm:text-6xl lg:text-7xl">
+                  {t("Unified AI Gateway with intelligent fallback and a rebuilt product surface.", "Unified AI Gateway with intelligent fallback and a rebuilt product surface.")}
                 </h1>
                 <p className="text-safe max-w-2xl text-lg leading-8 text-muted-foreground">
                   {t(
-                    "Одна API-поверхность, несколько провайдеров, нормализованные ошибки и устойчивый fallback от Groq Free к OpenRouter Free и далее к demo-safe mock-провайдеру.",
-                    "One API surface, multiple providers, normalized errors and resilient fallback from Groq Free to OpenRouter free models to a demo-safe mock provider."
+                    "Этот интерфейс уже сидит на реальном backend Worker: стриминг, маршрутизация, usage и provider health идут из рабочих endpoint'ов, а секреты остаются только на стороне сервера.",
+                    "This interface now sits on top of the real Worker backend: streaming, routing, usage and provider health come from working endpoints, while secrets stay server-side only."
                   )}
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg">
                   <Link href="/app/playground">
-                    {t("Открыть песочницу", "Open Playground")}
+                    {t("Open Workspace", "Open Workspace")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="secondary">
-                  <Link href="/docs">{t("Открыть API docs", "View API Docs")}</Link>
+                  <Link href="/docs">{t("API Docs", "API Docs")}</Link>
                 </Button>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <Card>
-                  <CardContent className="p-5">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Стриминг", "Streaming")}</div>
-                    <div className="mt-3 font-display text-3xl font-semibold">SSE</div>
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {t("Постепенная выдача токенов со стабильным UX.", "Progressive token delivery with stable UX.")}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-5">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Fallback</div>
-                    <div className="mt-3 font-display text-3xl font-semibold">3-tier</div>
-                    <div className="mt-2 text-sm text-muted-foreground">{"Groq -> OpenRouter -> Mock."}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-5">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Деплой", "Deploy")}</div>
-                    <div className="mt-3 font-display text-3xl font-semibold">{t("Публично", "Public")}</div>
-                    <div className="mt-2 text-sm text-muted-foreground">Cloudflare Pages + Workers.</div>
-                  </CardContent>
-                </Card>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Badge variant="success">{t("Live streaming", "Live streaming")}</Badge>
+                <Badge variant="accent">{t("Worker-side secrets", "Worker-side secrets")}</Badge>
+                <Badge variant="warning">{t("Fallback visibility", "Fallback visibility")}</Badge>
               </div>
             </motion.div>
 
             <motion.div {...fadeIn} className="relative">
-              <Card className="relative overflow-hidden">
-                <div className="absolute inset-0 surface-grid opacity-50" />
-                <CardHeader className="relative border-b border-border/70">
+              <div className="absolute -inset-5 animate-float rounded-[2rem] bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.18),transparent_55%),radial-gradient(circle_at_bottom,rgba(124,58,237,0.18),transparent_58%)] blur-2xl" />
+              <Card className="relative overflow-hidden ambient-ring">
+                <div className="absolute inset-0 surface-grid opacity-40" />
+                <CardHeader className="relative border-b border-white/10">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <CardTitle>{t("Превью gateway", "Gateway preview")}</CardTitle>
+                      <CardTitle>{t("Gateway preview", "Gateway preview")}</CardTitle>
                       <CardDescription>
-                        {t(
-                          "Playground UI коммерческого уровня с видимостью маршрутизации.",
-                          "Commercial-grade playground UI with routing visibility."
-                        )}
+                        {t("Живой снимок mode, provider routing и usage telemetry.", "A live snapshot of mode, provider routing and usage telemetry.")}
                       </CardDescription>
                     </div>
-                    <Badge variant="accent">{t("live оркестрация", "live orchestration")}</Badge>
+                    <ModePill mode={status.mode} />
                   </div>
                 </CardHeader>
                 <CardContent className="relative grid gap-4 p-6">
-                  <div className="rounded-3xl border border-border/70 bg-background/80 p-5">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div className="text-sm font-medium">{t("Поток запроса", "Request flow")}</div>
-                      <Badge>auto</Badge>
+                  <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-5">
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="text-sm font-medium text-white">{t("Routing order", "Routing order")}</div>
+                      <Badge>{t("auto", "auto")}</Badge>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <Badge variant="accent">Groq</Badge>
-                      <ArrowRight className="h-4 w-4" />
-                      <Badge variant="warning">OpenRouter</Badge>
-                      <ArrowRight className="h-4 w-4" />
-                      <Badge variant="success">Mock</Badge>
+                      {status.routingOrder.map((provider, index) => (
+                        <div key={provider} className="flex items-center gap-3">
+                          <Badge variant={index === 0 ? "accent" : index === 1 ? "warning" : "success"}>
+                            {provider}
+                          </Badge>
+                          {index < status.routingOrder.length - 1 ? <ArrowRight className="h-4 w-4" /> : null}
+                        </div>
+                      ))}
                     </div>
-                    <div className="mt-4 rounded-2xl border border-border/70 bg-panel/70 p-4 font-mono text-xs leading-6 text-muted-foreground">
+                    <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-black/35 p-4 font-mono text-xs leading-6 text-muted-foreground">
                       event: meta
                       <br />
-                      data: {`{"strategy":"auto","attemptedProvider":"groq","finalProvider":"openrouter","fallbackActivated":true}`}
+                      data:{" "}
+                      {`{"strategy":"auto","attemptedProvider":"${status.providers[0]?.id ?? "groq"}","finalProvider":"${status.providers[1]?.id ?? status.providers[0]?.id ?? "groq"}","fallbackActivated":${usage.totals.fallbackActivations > 0}}`}
                       <br />
                       <br />
                       event: token
                       <br />
-                      data: {`{"value":"RelayForge keeps the response moving..."}`}
+                      data: {`{"value":"RelayForge keeps the response moving while preserving provider visibility."}`}
                     </div>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-3xl border border-border/70 bg-background/70 p-5">
-                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Задержка", "Latency")}</div>
-                      <div className="mt-3 flex items-center gap-3">
-                        <Zap className="h-5 w-5 text-accent" />
-                        <span className="font-display text-2xl font-semibold">428 ms</span>
-                      </div>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Providers live", "Providers live")}</div>
+                      <div className="mt-3 font-display text-3xl font-semibold text-white">{activeProviders}</div>
                     </div>
-                    <div className="rounded-3xl border border-border/70 bg-background/70 p-5">
-                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Режим", "Mode")}</div>
-                      <div className="mt-3 flex items-center gap-3">
-                        <Sparkles className="h-5 w-5 text-secondary" />
-                        <span className="font-display text-2xl font-semibold">{t("Деградация", "Degraded")}</span>
-                      </div>
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Avg latency", "Avg latency")}</div>
+                      <div className="mt-3 font-display text-3xl font-semibold text-white">{formatDuration(usage.totals.avgLatencyMs)}</div>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                      <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Fallbacks", "Fallbacks")}</div>
+                      <div className="mt-3 font-display text-3xl font-semibold text-white">{formatNumber(usage.totals.fallbackActivations)}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -261,75 +266,75 @@ export default function HomePage() {
         </section>
 
         <section className="shell-container py-8">
-          <div className="grid gap-3 rounded-3xl border border-border/60 bg-panel/50 p-4 text-xs uppercase tracking-[0.22em] text-muted-foreground sm:grid-cols-4 sm:text-sm">
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Runtime Cloudflare Workers", "Cloudflare Workers runtime")}</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Основной путь Groq Free", "Groq Free primary path")}</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Fallback на OpenRouter Free", "OpenRouter free fallback")}</div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3">{t("Гарантия демо через mock", "Mock demo guarantee")}</div>
+          <div className="grid gap-3 rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-4 text-xs uppercase tracking-[0.22em] text-muted-foreground sm:grid-cols-4 sm:text-sm">
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">{t("Cloudflare Workers runtime", "Cloudflare Workers runtime")}</div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">{t("Groq primary path", "Groq primary path")}</div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">{t("OpenRouter fallback", "OpenRouter fallback")}</div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">{t("Mock demo safety-net", "Mock demo safety-net")}</div>
           </div>
         </section>
 
         <section className="shell-container section-space">
-          <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
             <div className="space-y-4">
-              <div className="eyebrow">{t("Превью Продукта", "Product Preview")}</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">
-                {t(
-                  "Премиальный dashboard UI для скриншотов и интервью.",
-                  "A premium dashboard UI built for screenshots and interviews."
-                )}
+              <div className="eyebrow">{t("Platform Dashboard", "Platform Dashboard")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance text-white">
+                {t("Real-time observability wired to the actual gateway.", "Real-time observability wired to the actual gateway.")}
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
                 {t(
-                  "Продуктовая поверхность объединяет streaming UX, статусы провайдеров и observability-аналитику в цельное демо developer-инфраструктуры.",
-                  "The product surface combines streaming UX, provider health visibility and observability-style analytics into one credible developer infrastructure demo."
+                  "Вместо фейковых карточек интерфейс показывает реальные provider statuses, usage totals и routing behavior из Worker API с безопасным fallback на demo data, если backend недоступен.",
+                  "Instead of static showcase cards, the interface shows real provider statuses, usage totals and routing behavior from the Worker API, with demo-data fallback if the backend is unavailable."
                 )}
               </p>
             </div>
             <Card className="overflow-hidden">
-              <CardContent className="grid gap-4 p-6 lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="space-y-4 rounded-3xl border border-border/70 bg-background/75 p-5">
+              <CardContent className="grid gap-4 p-6 lg:grid-cols-[0.78fr_1.22fr]">
+                <div className="space-y-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">{t("Статус провайдеров", "Provider status")}</div>
-                    <Badge variant="accent">{t("деградация", "degraded")}</Badge>
+                    <div className="text-sm font-medium text-white">{t("Provider health", "Provider health")}</div>
+                    <ModePill mode={status.mode} />
                   </div>
-                  {["Groq Free", "OpenRouter Free", "Mock / Demo"].map((label, index) => (
-                    <div key={label} className="flex items-center justify-between rounded-2xl border border-border/70 bg-panel/70 px-4 py-3">
-                      <span className="text-sm">{label}</span>
-                      <Badge variant={index === 0 ? "warning" : index === 1 ? "accent" : "success"}>
-                        {index === 0 ? t("ограничен", "limited") : index === 1 ? "fallback" : "demo-ready"}
-                      </Badge>
+                  {status.providers.map((provider) => (
+                    <div key={provider.id} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-sm text-white">{provider.label}</div>
+                          <div className="text-xs text-muted-foreground">{provider.model}</div>
+                        </div>
+                        <ProviderStatusPill status={provider.status} />
+                      </div>
                     </div>
                   ))}
                 </div>
-                <div className="space-y-4 rounded-3xl border border-border/70 bg-background/75 p-5">
+                <div className="space-y-4 rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">{t("Телеметрия использования", "Usage telemetry")}</div>
-                    <Badge>{t("наблюдаемость", "observability")}</Badge>
+                    <div className="text-sm font-medium text-white">{t("Usage telemetry", "Usage telemetry")}</div>
+                    <Badge variant="accent">{t("live snapshot", "live snapshot")}</Badge>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-3">
                     {[
-                      [t("Запросы", "Requests"), "128"],
-                      ["Fallback", "19"],
-                      [t("Средняя задержка", "Avg latency"), "544 ms"]
+                      [t("Requests", "Requests"), formatNumber(usage.totals.requests)],
+                      [t("Success rate", "Success rate"), `${successRate}%`],
+                      [t("Fallback rate", "Fallback rate"), `${fallbackRate}%`]
                     ].map(([label, value]) => (
-                      <div key={label} className="rounded-2xl border border-border/70 bg-panel/70 p-4">
+                      <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
                         <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{label}</div>
-                        <div className="mt-3 font-display text-2xl font-semibold">{value}</div>
+                        <div className="mt-3 font-display text-2xl font-semibold text-white">{value}</div>
                       </div>
                     ))}
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-panel/70 p-4">
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                     <div className="mb-4 flex items-center justify-between">
-                      <div className="text-sm font-medium">{t("Запросы по времени", "Requests over time")}</div>
+                      <div className="text-sm font-medium text-white">{t("Requests over time", "Requests over time")}</div>
                       <ChartNoAxesCombined className="h-4 w-4 text-accent" />
                     </div>
                     <div className="grid grid-cols-7 gap-2">
-                      {[28, 34, 48, 62, 44, 36, 52].map((height, index) => (
-                        <div key={index} className="flex h-28 items-end">
+                      {usage.timeseries.map((point) => (
+                        <div key={point.label} className="flex h-28 items-end">
                           <div
-                            className="w-full rounded-t-2xl bg-[linear-gradient(180deg,rgba(79,125,255,0.95),rgba(127,99,255,0.55))]"
-                            style={{ height: `${height}%` }}
+                            className="w-full rounded-t-2xl bg-[linear-gradient(180deg,rgba(34,211,238,0.95),rgba(124,58,237,0.55))]"
+                            style={{ height: `${Math.max(14, Math.round((point.requests / Math.max(...usage.timeseries.map((entry) => entry.requests))) * 100))}%` }}
                           />
                         </div>
                       ))}
@@ -344,9 +349,9 @@ export default function HomePage() {
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="space-y-10">
             <div className="space-y-4 text-center">
-              <div className="eyebrow">{t("Ключевые Функции", "Core Features")}</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">
-                {t("Один интерфейс, несколько провайдеров, устойчивость по дизайну.", "One interface, multiple providers, resilient by design.")}
+              <div className="eyebrow">{t("Built for Resilience", "Built for Resilience")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance text-white">
+                {t("The new interface keeps the aesthetic from Relayforgeaiv2 and the behavior from RelayForge AI.", "The new interface keeps the aesthetic from Relayforgeaiv2 and the behavior from RelayForge AI.")}
               </h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -354,9 +359,9 @@ export default function HomePage() {
                 const Icon = feature.icon;
 
                 return (
-                  <Card key={feature.title}>
+                  <Card key={feature.title} className="group overflow-hidden">
                     <CardHeader>
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-accent/20 bg-accent/10 text-accent">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-accent transition group-hover:scale-105">
                         <Icon className="h-5 w-5" />
                       </div>
                       <CardTitle>{feature.title}</CardTitle>
@@ -371,122 +376,38 @@ export default function HomePage() {
 
         <section className="shell-container section-space">
           <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-3">
-            {workflowCards.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <Card key={item.title}>
-                  <CardHeader>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/70">
-                      <Icon className="h-5 w-5 text-accent" />
-                    </div>
-                    <CardTitle>{item.title}</CardTitle>
-                    <CardDescription>{item.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              );
-            })}
+            {workflowCards.map((item, index) => (
+              <Card key={item.title}>
+                <CardHeader>
+                  <Badge variant={index === 0 ? "accent" : index === 1 ? "warning" : "success"}>{t("Flow", "Flow")}</Badge>
+                  <CardTitle>{item.title}</CardTitle>
+                  <CardDescription>{item.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
           </motion.div>
         </section>
 
         <section className="shell-container section-space">
-          <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-            <Card className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>{t("Стримьте ответы в реальном времени", "Stream responses in real time")}</CardTitle>
-                <CardDescription>
-                  {t(
-                    "Держите output-панель активной с прогрессивной выдачей токенов и стабильной версткой.",
-                    "Keep the output panel alive with progressive tokens and a calm, stable layout."
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-3xl border border-border/70 bg-background/80 p-5 font-mono text-sm leading-7 text-foreground">
-                  {t(
-                    "RelayForge стримит частичный вывод параллельно с трекингом provider-метаданных.",
-                    "RelayForge streams partial output while tracking provider metadata in parallel."
-                  )}
-                  <span className="animate-blink">|</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("Fallback без драмы", "Fallback without drama")}</CardTitle>
-                <CardDescription>
-                  {t(
-                    "Маршрутизация остается явной: пользователь видит, что пытались вызвать и кто реально отдал ответ.",
-                    "Routing stays explicit: users always know what was attempted and what actually served the response."
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  t("timeout -> переход на OpenRouter", "timeout -> promote to OpenRouter"),
-                  t("rate limit -> сохранение UX и retry ниже по цепочке", "rate limit -> preserve UX and retry downstream"),
-                  t("исчерпание квоты -> переключение в demo-ready mock mode", "quota exhaustion -> switch into demo-ready mock mode")
-                ].map((item) => (
-                  <div key={item} className="rounded-2xl border border-border/70 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
-                    {item}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </section>
-
-        <section className="shell-container section-space">
-          <motion.div {...fadeIn} className="space-y-10">
+          <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="space-y-4">
-              <div className="eyebrow">{t("Маршрутизация Провайдеров", "Provider Routing")}</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">
-                {t("Спроектировано под free-tier ограничения, а не вопреки им.", "Designed for free-tier constraints, not in spite of them.")}
-              </h2>
-            </div>
-            <div className="grid gap-4 lg:grid-cols-3">
-              {providerCards.map((provider) => (
-                <Card key={provider.title}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-3">
-                      <CardTitle>{provider.title}</CardTitle>
-                      <Badge variant={provider.badge === "primary" ? "success" : provider.badge === "secondary" ? "warning" : "accent"}>
-                        {provider.subtitle}
-                      </Badge>
-                    </div>
-                    <CardDescription>{provider.detail}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        <section className="shell-container section-space">
-          <motion.div {...fadeIn} className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-4">
-              <div className="eyebrow">{t("Free-Tier Архитектура", "Free-Tier Architecture")}</div>
-              <h2 className="font-display text-4xl font-semibold text-balance">
-                {t("Статический frontend. Serverless gateway. Секреты только на edge.", "Static frontend. Serverless gateway. Secrets only on the edge.")}
+              <div className="eyebrow">{t("Serverless Architecture", "Serverless Architecture")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance text-white">
+                {t("Server-side secrets, shared contracts and an honest runtime story.", "Server-side secrets, shared contracts and an honest runtime story.")}
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
                 {t(
-                  "Cloudflare Pages хостит премиальный UI как статический export. Cloudflare Workers обрабатывают оркестрацию провайдеров, стриминг, нормализованные ошибки и телеметрию без платной backend-инфраструктуры.",
-                  "Cloudflare Pages hosts the premium UI as a static export. Cloudflare Workers handle provider orchestration, streaming, normalized errors and telemetry without introducing paid backend infrastructure."
+                  "Дизайн взят из нового лендинга, но продуктовая подача теперь соответствует реальной архитектуре: backend Worker оркестрирует провайдеров, frontend только потребляет API, а shared package удерживает контракты консистентными.",
+                  "The design comes from the new landing concept, but the product story now matches the real architecture: the Worker orchestrates providers, the frontend consumes the API, and the shared package keeps contracts consistent."
                 )}
               </p>
             </div>
             <Card>
               <CardContent className="grid gap-4 p-6 md:grid-cols-2">
-                {[
-                  [t("Frontend", "Frontend"), "Next.js + Tailwind + TanStack Query + Recharts"],
-                  [t("Backend", "Backend"), t("Cloudflare Worker с модульными provider-адаптерами", "Cloudflare Worker with modular provider adapters")],
-                  [t("Контракты", "Contracts"), t("Общие Zod-схемы и типизированные response-shape", "Shared Zod schemas and typed response shapes")],
-                  [t("Надежность", "Reliability"), t("Demo-safe mock mode для публичной доступности", "Demo-safe mock mode for public availability")]
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{label}</div>
-                    <div className="mt-3 text-sm leading-6 text-foreground">{value}</div>
+                {architectureCards.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{item.title}</div>
+                    <div className="mt-3 text-sm leading-6 text-foreground">{item.description}</div>
                   </div>
                 ))}
               </CardContent>
@@ -494,31 +415,74 @@ export default function HomePage() {
           </motion.div>
         </section>
 
-        <section className="shell-container pb-24 pt-8">
+        <section className="shell-container section-space">
+          <motion.div {...fadeIn} className="space-y-8">
+            <div className="space-y-4">
+              <div className="eyebrow">{t("Telemetry", "Telemetry")}</div>
+              <h2 className="font-display text-4xl font-semibold text-balance text-white">
+                {t("Real charts now replace decorative metrics.", "Real charts now replace decorative metrics.")}
+              </h2>
+            </div>
+            <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Requests and latency", "Requests and latency")}</CardTitle>
+                  <CardDescription>
+                    {t("Данные приходят из usage endpoint и показывают объем, fallback и задержку.", "Usage endpoint data visualizes volume, fallback activity and latency.")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UsageLatencyChart data={usage.timeseries} />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("Provider distribution", "Provider distribution")}</CardTitle>
+                  <CardDescription>
+                    {t("Финальный провайдер после fallback, а не маркетинговая иллюстрация.", "The final provider after fallback, not a decorative marketing chart.")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ProviderDistributionChart data={usage.providerDistribution} />
+                  <div className="grid gap-2">
+                    {usage.providerDistribution.map((entry) => (
+                      <div key={entry.provider} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
+                        <span className="uppercase tracking-[0.18em] text-muted-foreground">{entry.provider}</span>
+                        <span className="font-medium text-white">{formatNumber(entry.value)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        </section>
+
+        <section className="shell-container pb-24 pt-6">
           <motion.div {...fadeIn}>
             <Card className="overflow-hidden">
               <CardContent className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div className="space-y-4">
-                  <div className="eyebrow">{t("Готово к исследованию", "Ready to explore")}</div>
-                  <h2 className="font-display text-4xl font-semibold text-balance">
-                    {t("Портфолио-проект, который ведет себя как реальный AI infra продукт.", "A portfolio project that behaves like a real AI infra product.")}
+                  <div className="eyebrow">{t("Ready to inspect", "Ready to inspect")}</div>
+                  <h2 className="font-display text-4xl font-semibold text-balance text-white">
+                    {t("Use the playground as the front door, then inspect how the system behaves under fallback.", "Use the playground as the front door, then inspect how the system behaves under fallback.")}
                   </h2>
                   <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
                     {t(
-                      "Откройте песочницу, проверьте маршрутизацию провайдеров, изучите docs и используйте dashboard как практический архитектурный walkthrough на интервью.",
-                      "Open the playground, inspect provider routing, review the docs and use the dashboard as a concrete architecture walkthrough in interviews."
+                      "Откройте stream endpoint, проверьте provider status, посмотрите logs и usage analytics. Весь функционал уже перенесен на новый дизайн без выноса ключей во frontend.",
+                      "Open the stream endpoint, inspect provider status, review logs and usage analytics. The functional surface is now migrated onto the new design without exposing provider keys in the frontend."
                     )}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="lg">
                     <Link href="/app/playground">
-                      {t("Запустить демо", "Launch demo")}
+                      {t("Launch demo", "Launch demo")}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="secondary">
-                    <Link href="/docs">{t("Читать docs", "Read docs")}</Link>
+                    <Link href="/app/status">{t("Provider status", "Provider status")}</Link>
                   </Button>
                 </div>
               </CardContent>

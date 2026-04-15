@@ -38,11 +38,22 @@ export function AppShell({ children }: PropsWithChildren) {
   const mode = data?.data.mode ?? "demo";
 
   return (
-    <div className="shell-container grid min-w-0 gap-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <div className="shell-container grid min-w-0 gap-6 py-6 lg:grid-cols-[290px_minmax(0,1fr)]">
       <aside className="min-w-0 space-y-4">
-        <Card className="overflow-hidden p-3 sm:p-4 lg:sticky lg:top-6">
+        <Card className="overflow-hidden p-4 lg:sticky lg:top-6">
           <div className="space-y-6">
             <BrandMark />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                {pickLocale(locale, { ru: "Workspace", en: "Workspace" })}
+              </div>
+              <div className="mt-2 font-display text-lg font-semibold text-white">
+                {pickLocale(locale, { ru: "Public Sandbox", en: appConfig.workspace })}
+              </div>
+              <div className="mt-2 text-safe text-sm text-muted-foreground">
+                {pickLocale(locale, { ru: "Cloudflare Pages + Workers", en: appConfig.environment })}
+              </div>
+            </div>
             <div className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -55,8 +66,8 @@ export function AppShell({ children }: PropsWithChildren) {
                     className={cn(
                       "flex min-w-0 items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
                       active
-                        ? "border-accent/30 bg-accent/12 text-foreground shadow-glow"
-                        : "border-transparent text-muted-foreground hover:border-border/60 hover:bg-background/60 hover:text-foreground"
+                        ? "border-accent/25 bg-accent/10 text-white shadow-glow"
+                        : "border-transparent text-muted-foreground hover:border-white/10 hover:bg-white/5 hover:text-foreground"
                     )}
                   >
                     <span className="flex min-w-0 items-center gap-3">
@@ -67,18 +78,18 @@ export function AppShell({ children }: PropsWithChildren) {
                 );
               })}
             </div>
-            <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                {pickLocale(locale, { ru: "Рабочая область", en: "Workspace" })}
+                {pickLocale(locale, { ru: "Mode", en: "Mode" })}
               </div>
-              <div className="mt-2 font-display text-lg font-semibold">
-                {pickLocale(locale, { ru: "Публичный Sandbox", en: appConfig.workspace })}
-              </div>
-              <div className="mt-2 text-safe text-sm text-muted-foreground">
-                {pickLocale(locale, {
-                  ru: "Cloudflare Pages + Workers",
-                  en: appConfig.environment
-                })}
+              <div className="mt-3 flex items-center gap-3">
+                <ModePill mode={mode} />
+                <span className="text-sm text-muted-foreground">
+                  {pickLocale(locale, {
+                    ru: "Fallback chain active",
+                    en: "Fallback chain active"
+                  })}
+                </span>
               </div>
             </div>
           </div>
@@ -89,13 +100,13 @@ export function AppShell({ children }: PropsWithChildren) {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                {pickLocale(locale, { ru: "Режим системы", en: "System mode" })}
+                {pickLocale(locale, { ru: "System mode", en: "System mode" })}
               </div>
               <div className="mt-2 flex items-center gap-3">
                 <ModePill mode={mode} />
                 <span className="text-safe text-sm text-muted-foreground">
                   {pickLocale(locale, {
-                    ru: "Free-tier маршрутизация с автоматическим fallback и demo-safe надежностью.",
+                    ru: "Free-tier routing with automatic fallback and demo-safe reliability.",
                     en: "Free-tier routing with automatic fallback and demo-safe reliability."
                   })}
                 </span>

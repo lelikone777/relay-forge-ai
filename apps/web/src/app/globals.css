@@ -3,37 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --background: 218 38% 97%;
-  --foreground: 228 22% 12%;
-  --muted: 220 23% 92%;
-  --muted-foreground: 223 14% 40%;
+  --background: 212 100% 98%;
+  --foreground: 222 47% 11%;
+  --muted: 216 33% 94%;
+  --muted-foreground: 218 17% 40%;
   --panel: 0 0% 100%;
-  --panel-foreground: 228 22% 14%;
-  --border: 219 20% 86%;
-  --accent: 224 86% 57%;
+  --panel-foreground: 222 47% 11%;
+  --border: 216 24% 86%;
+  --accent: 191 92% 42%;
   --accent-foreground: 0 0% 100%;
-  --secondary: 232 84% 61%;
-  --ring: 224 86% 57%;
-  --success: 160 84% 39%;
-  --warning: 38 92% 50%;
-  --danger: 350 86% 56%;
+  --secondary: 252 92% 66%;
+  --ring: 191 92% 42%;
+  --success: 157 74% 38%;
+  --warning: 37 92% 52%;
+  --danger: 352 84% 57%;
 }
 
 .dark {
-  --background: 228 24% 7%;
-  --foreground: 220 33% 96%;
-  --muted: 228 18% 14%;
-  --muted-foreground: 219 14% 66%;
-  --panel: 228 19% 11%;
+  --background: 224 52% 5%;
+  --foreground: 210 40% 98%;
+  --muted: 222 32% 11%;
+  --muted-foreground: 217 15% 68%;
+  --panel: 225 39% 10%;
   --panel-foreground: 220 33% 96%;
-  --border: 223 17% 21%;
-  --accent: 214 100% 63%;
-  --accent-foreground: 221 39% 11%;
-  --secondary: 254 93% 70%;
-  --ring: 214 100% 63%;
-  --success: 160 84% 45%;
-  --warning: 42 95% 58%;
-  --danger: 348 100% 66%;
+  --border: 220 29% 18%;
+  --accent: 191 95% 47%;
+  --accent-foreground: 214 100% 6%;
+  --secondary: 252 95% 68%;
+  --ring: 191 95% 47%;
+  --success: 159 84% 46%;
+  --warning: 39 100% 61%;
+  --danger: 351 100% 67%;
 }
 
 @layer base {
@@ -48,20 +48,22 @@
   body {
     @apply min-h-screen overflow-x-hidden bg-background font-sans text-foreground antialiased;
     background-image:
-      radial-gradient(circle at top left, rgba(77, 123, 255, 0.18), transparent 34%),
-      radial-gradient(circle at top right, rgba(110, 84, 255, 0.14), transparent 28%),
-      linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0));
+      radial-gradient(circle at 14% 18%, rgba(6, 182, 212, 0.2), transparent 24%),
+      radial-gradient(circle at 82% 12%, rgba(124, 58, 237, 0.16), transparent 26%),
+      radial-gradient(circle at 50% 82%, rgba(14, 165, 233, 0.12), transparent 28%),
+      linear-gradient(180deg, rgba(246, 249, 255, 0.92), rgba(235, 242, 255, 0.94));
   }
 
   .dark body {
     background-image:
-      radial-gradient(circle at top left, rgba(77, 123, 255, 0.18), transparent 30%),
-      radial-gradient(circle at top right, rgba(110, 84, 255, 0.12), transparent 26%),
-      linear-gradient(to bottom, rgba(9,12,18,0.94), rgba(9,12,18,1));
+      radial-gradient(circle at 12% 18%, rgba(6, 182, 212, 0.22), transparent 22%),
+      radial-gradient(circle at 82% 10%, rgba(124, 58, 237, 0.18), transparent 24%),
+      radial-gradient(circle at 50% 120%, rgba(59, 130, 246, 0.18), transparent 36%),
+      linear-gradient(180deg, rgba(4, 7, 16, 0.98), rgba(4, 7, 16, 1));
   }
 
   ::selection {
-    background: rgba(77, 123, 255, 0.28);
+    background: rgba(34, 211, 238, 0.35);
   }
 
   img,
@@ -83,7 +85,7 @@
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-accent;
+    @apply inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.28em] text-accent;
   }
 
   .text-balance {
@@ -97,8 +99,33 @@
 
   .surface-grid {
     background-image:
-      linear-gradient(to right, rgba(148,163,184,0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(148,163,184,0.08) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .dark .surface-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  .glass-panel {
+    @apply rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(8,15,28,0.92),rgba(8,15,28,0.74))] shadow-panel backdrop-blur-xl;
+  }
+
+  .light-panel {
+    @apply rounded-3xl border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,248,255,0.84))] shadow-panel backdrop-blur-xl;
+  }
+
+  .ambient-ring {
+    box-shadow:
+      0 0 0 1px rgba(34, 211, 238, 0.12),
+      0 18px 60px -28px rgba(6, 182, 212, 0.45),
+      0 22px 90px -45px rgba(124, 58, 237, 0.55);
+  }
+
+  .grid-fade {
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92), transparent);
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Gauge, LoaderCircle, RotateCcw, Send, Sparkles, Square } from "lucide-react";
+import { Gauge, LoaderCircle, RotateCcw, Send, Sparkles, Square, Waves } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { StrategyId } from "@relayforge/shared";
@@ -25,6 +25,7 @@ const strategies: StrategyId[] = ["auto", "groq", "openrouter", "mock"];
 
 export default function PlaygroundPage() {
   const { locale } = useI18n();
+  const t = (ru: string, en: string) => pickLocale(locale, { ru, en });
   const { data: statusData } = useQuery({
     queryKey: ["provider-status"],
     queryFn: fetchProviderStatus
@@ -49,21 +50,19 @@ export default function PlaygroundPage() {
       { label: responseMeta.finalProvider, tone: "accent" as const },
       { label: responseMeta.model, tone: "default" as const },
       {
-        label: responseMeta.fallbackActivated
-          ? pickLocale(locale, { ru: "fallback активирован", en: "fallback activated" })
-          : pickLocale(locale, { ru: "без fallback", en: "direct hit" }),
+        label: responseMeta.fallbackActivated ? t("fallback активирован", "fallback activated") : t("без fallback", "direct hit"),
         tone: "warning" as const
       },
       {
         label: responseMeta.demoMode
-          ? pickLocale(locale, { ru: "демо режим", en: "demo mode" })
+          ? t("demo mode", "demo mode")
           : responseMeta.degradedMode
-            ? pickLocale(locale, { ru: "режим деградации", en: "degraded mode" })
-            : pickLocale(locale, { ru: "нормально", en: "normal" }),
+            ? t("degraded mode", "degraded mode")
+            : t("normal", "normal"),
         tone: "success" as const
       }
     ];
-  }, [locale, responseMeta]);
+  }, [responseMeta, locale]);
 
   useEffect(() => {
     setStrategy(defaultStrategy);
@@ -72,10 +71,10 @@ export default function PlaygroundPage() {
   useEffect(() => {
     setPrompt((current) =>
       current.trim().length === 0
-        ? pickLocale(locale, {
-            ru: "Опиши желаемый ответ для маршрутизации через RelayForge.",
-            en: "Describe the response you want routed through RelayForge."
-          })
+        ? t(
+            "Опиши ответ, который нужно маршрутизировать через RelayForge.",
+            "Describe the response you want routed through RelayForge."
+          )
         : current
     );
   }, [locale]);
@@ -83,38 +82,28 @@ export default function PlaygroundPage() {
   return (
     <div className="min-w-0 space-y-8">
       <PageIntro
-        eyebrow={pickLocale(locale, { ru: "Ключевой Сценарий", en: "Core Experience" })}
-        title={pickLocale(locale, {
-          ru: "Запускайте промпты через отказоустойчивый AI gateway",
-          en: "Run prompts through a resilient AI gateway"
-        })}
-        description={pickLocale(locale, {
-          ru: "RelayForge стримит ответ по мере генерации, показывает метаданные провайдера и сохраняет стабильный UX при проблемах апстрима.",
-          en: "RelayForge streams responses progressively, surfaces provider metadata and preserves a clean UX when upstream providers degrade."
-        })}
+        eyebrow={t("Core Experience", "Core Experience")}
+        title={t("Run prompts through the rebuilt gateway workspace", "Run prompts through the rebuilt gateway workspace")}
+        description={t(
+          "Этот экран использует реальные endpoints чата и стриминга: ответ приходит из Worker, а UI показывает метаданные маршрутизации, fallback и latency в новом интерфейсе.",
+          "This screen uses the real chat and streaming endpoints: the response comes from the Worker while the UI exposes routing metadata, fallback and latency inside the rebuilt interface."
+        )}
         actions={
           <>
             <Badge variant="accent">POST /api/v1/stream</Badge>
-            <Badge>
-              {streamingEnabled
-                ? pickLocale(locale, { ru: "стриминг включен", en: "streaming on" })
-                : pickLocale(locale, { ru: "стриминг выключен", en: "streaming off" })}
-            </Badge>
+            <Badge>{streamingEnabled ? t("streaming on", "streaming on") : t("streaming off", "streaming off")}</Badge>
           </>
         }
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(380px,0.95fr)]">
         <Card className="overflow-hidden">
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <CardTitle>{pickLocale(locale, { ru: "Редактор промпта", en: "Prompt composer" })}</CardTitle>
+                <CardTitle>{t("Prompt composer", "Prompt composer")}</CardTitle>
                 <CardDescription>
-                  {pickLocale(locale, {
-                    ru: "Единая API-поверхность и маршрутизация по стратегии.",
-                    en: "One API surface. Strategy-aware provider routing."
-                  })}
+                  {t("Один payload, несколько стратегий маршрутизации и реальный stream transport.", "One payload, multiple routing strategies and a real streaming transport.")}
                 </CardDescription>
               </div>
               <Badge variant="accent">{strategy}</Badge>
@@ -136,49 +125,37 @@ export default function PlaygroundPage() {
             <Textarea
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder={pickLocale(locale, {
-                ru: "Опишите ответ, который нужно маршрутизировать через RelayForge.",
-                en: "Describe the response you want routed through RelayForge."
-              })}
+              placeholder={t(
+                "Опишите ответ, который должен пройти через gateway.",
+                "Describe the response that should pass through the gateway."
+              )}
+              className="min-h-[18rem]"
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  {pickLocale(locale, { ru: "Режим", en: "Mode" })}
-                </div>
-                <div className="mt-2 flex items-center gap-2">
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Mode", "Mode")}</div>
+                <div className="mt-3 flex items-center gap-2">
                   <ModePill mode={statusData?.data.mode ?? "demo"} />
                 </div>
               </div>
-              <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  {pickLocale(locale, { ru: "Стриминг", en: "Streaming" })}
-                </div>
-                <div className="text-safe mt-2 text-sm text-foreground">
-                  {streamingEnabled
-                    ? pickLocale(locale, { ru: "Включен по умолчанию", en: "Enabled by default" })
-                    : pickLocale(locale, { ru: "Отключен в настройках", en: "Disabled by preference" })}
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Streaming", "Streaming")}</div>
+                <div className="mt-3 text-sm text-foreground">
+                  {streamingEnabled ? t("Enabled by default", "Enabled by default") : t("Disabled in settings", "Disabled in settings")}
                 </div>
               </div>
-              <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  {pickLocale(locale, { ru: "Порядок fallback", en: "Fallback order" })}
-                </div>
-                <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Fallback order", "Fallback order")}</div>
+                <div className="mt-3 space-y-1 text-sm text-muted-foreground">
                   <div>1. Groq</div>
                   <div>2. OpenRouter</div>
                   <div>3. Mock</div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                  {pickLocale(locale, { ru: "Публичное демо", en: "Public demo" })}
-                </div>
-                <div className="text-safe mt-2 text-sm text-foreground">
-                  {pickLocale(locale, {
-                    ru: "Всегда тестируется через mock fallback.",
-                    en: "Always testable via mock fallback."
-                  })}
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+                <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("Public demo", "Public demo")}</div>
+                <div className="mt-3 text-sm text-foreground">
+                  {t("Если upstream недоступен, mock сохраняет тестируемость интерфейса.", "If upstream providers fail, mock keeps the interface testable.")}
                 </div>
               </div>
             </div>
@@ -188,50 +165,45 @@ export default function PlaygroundPage() {
                 disabled={isStreaming || prompt.trim().length === 0}
               >
                 {isStreaming ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {pickLocale(locale, { ru: "Отправить запрос", en: "Send request" })}
+                {t("Send request", "Send request")}
               </Button>
               <Button onClick={() => void (isStreaming ? stop() : retry())} variant="secondary">
                 {isStreaming ? <Square className="h-4 w-4" /> : <RotateCcw className="h-4 w-4" />}
-                {isStreaming
-                  ? pickLocale(locale, { ru: "Остановить стрим", en: "Stop stream" })
-                  : pickLocale(locale, { ru: "Повторить", en: "Retry" })}
+                {isStreaming ? t("Stop stream", "Stop stream") : t("Retry", "Retry")}
               </Button>
               <Button onClick={clear} variant="ghost">
-                {pickLocale(locale, { ru: "Сброс", en: "Reset" })}
+                {t("Reset", "Reset")}
               </Button>
             </div>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <Card className="min-h-[27rem] overflow-hidden">
+          <Card className="min-h-[30rem] overflow-hidden">
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <CardTitle>{pickLocale(locale, { ru: "Стриминг ответа", en: "Streaming response" })}</CardTitle>
+                  <CardTitle>{t("Streaming response", "Streaming response")}</CardTitle>
                   <CardDescription>
-                    {pickLocale(locale, {
-                      ru: "Постепенная отрисовка с нормализованными метаданными.",
-                      en: "Progressive rendering with normalized metadata."
-                    })}
+                    {t("Живой вывод токенов, метаданных и ошибок без смены layout.", "Live token output, metadata and errors without forcing a layout change.")}
                   </CardDescription>
                 </div>
-                {isStreaming ? <Badge variant="accent">{pickLocale(locale, { ru: "живой стрим", en: "live stream" })}</Badge> : null}
+                {isStreaming ? <Badge variant="accent">{t("live stream", "live stream")}</Badge> : null}
               </div>
             </CardHeader>
             <CardContent className="space-y-5">
               {responseText ? (
-                <div className="rounded-2xl border border-border/70 bg-background/70 p-5 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
+                <div className="min-h-[18rem] rounded-[1.5rem] border border-white/10 bg-black/30 p-5 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
                   {responseText}
                   {isStreaming ? <span className="animate-blink">|</span> : null}
                 </div>
               ) : (
                 <EmptyState
-                  title={pickLocale(locale, { ru: "Ответа пока нет", en: "No response yet" })}
-                  description={pickLocale(locale, {
-                    ru: "Запустите промпт, чтобы посмотреть токены стрима, fallback-метаданные и задержку без смены layout.",
-                    en: "Run a prompt to inspect streaming tokens, fallback metadata and latency without leaving the current layout."
-                  })}
+                  title={t("No response yet", "No response yet")}
+                  description={t(
+                    "Запустите запрос, чтобы увидеть stream tokens, provider metadata и нормализованные fallback-события.",
+                    "Run a request to inspect stream tokens, provider metadata and normalized fallback events."
+                  )}
                 />
               )}
 
@@ -257,57 +229,53 @@ export default function PlaygroundPage() {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{pickLocale(locale, { ru: "Метаданные запроса", en: "Request metadata" })}</CardTitle>
+                <CardTitle className="text-base">{t("Request metadata", "Request metadata")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Выбранная стратегия", en: "Selected strategy" })}</span>
+                  <span>{t("Selected strategy", "Selected strategy")}</span>
                   <span className="text-safe text-right text-foreground break-words">{strategy}</span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Старт", en: "Started at" })}</span>
+                  <span>{t("Started at", "Started at")}</span>
                   <span className="text-safe text-right text-foreground break-words">
-                    {requestStartedAt ? formatTimestamp(requestStartedAt) : pickLocale(locale, { ru: "Ожидание", en: "Idle" })}
+                    {requestStartedAt ? formatTimestamp(requestStartedAt) : t("Idle", "Idle")}
                   </span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Транспорт", en: "Transport" })}</span>
-                  <span className="text-safe text-right text-foreground break-words">{streamingEnabled ? "text/event-stream" : "json"}</span>
+                  <span>{t("Transport", "Transport")}</span>
+                  <span className="text-safe text-right text-foreground break-words">
+                    {streamingEnabled ? "text/event-stream" : "json"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{pickLocale(locale, { ru: "Метаданные ответа", en: "Response metadata" })}</CardTitle>
+                <CardTitle className="text-base">{t("Response metadata", "Response metadata")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Изначальный провайдер", en: "Attempted provider" })}</span>
+                  <span>{t("Attempted provider", "Attempted provider")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.attemptedProvider ?? t("Pending", "Pending")}</span>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span>{t("Final provider", "Final provider")}</span>
+                  <span className="text-safe text-right text-foreground break-words">{responseMeta?.finalProvider ?? t("Pending", "Pending")}</span>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span>{t("Latency", "Latency")}</span>
                   <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta?.attemptedProvider ?? pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
+                    {responseMeta ? formatDuration(responseMeta.latencyMs) : t("Pending", "Pending")}
                   </span>
                 </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Финальный провайдер", en: "Final provider" })}</span>
+                  <span>{t("Fallback", "Fallback")}</span>
                   <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta?.finalProvider ?? pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
-                  </span>
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Задержка", en: "Latency" })}</span>
-                  <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta ? formatDuration(responseMeta.latencyMs) : pickLocale(locale, { ru: "Ожидание", en: "Pending" })}
-                  </span>
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <span>{pickLocale(locale, { ru: "Fallback", en: "Fallback" })}</span>
-                  <span className="text-safe text-right text-foreground break-words">
-                    {responseMeta?.fallbackActivated
-                      ? pickLocale(locale, { ru: "Активирован", en: "Activated" })
-                      : pickLocale(locale, { ru: "Нет", en: "No" })}
+                    {responseMeta?.fallbackActivated ? t("Activated", "Activated") : t("No", "No")}
                   </span>
                 </div>
               </CardContent>
@@ -318,29 +286,18 @@ export default function PlaygroundPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{pickLocale(locale, { ru: "Лента провайдеров", en: "Provider rail" })}</CardTitle>
+          <CardTitle>{t("Provider rail", "Provider rail")}</CardTitle>
           <CardDescription>
-            {pickLocale(locale, {
-              ru: "Текущий health-снимок с Worker endpoint статуса.",
-              en: "Current health snapshot from the Worker status endpoint."
-            })}
+            {t("Текущий snapshot берется из Worker status endpoint и помогает проверить готовность цепочки.", "The current snapshot comes from the Worker status endpoint and verifies readiness across the provider chain.")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 lg:grid-cols-3">
           {statusData?.data.providers.map((provider) => (
-            <div key={provider.id} className="rounded-2xl border border-border/70 bg-background/60 p-5">
+            <div key={provider.id} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-2">
-                  <div className="font-display text-lg font-semibold">{provider.label}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {locale === "ru"
-                      ? provider.id === "groq"
-                        ? "Основной low-latency путь для режима Auto."
-                        : provider.id === "openrouter"
-                          ? "Резервный free-tier слой, включается при проблемах Groq."
-                          : "Гарантированный demo-safe провайдер с псевдо-стримингом."
-                      : provider.description}
-                  </div>
+                  <div className="font-display text-lg font-semibold text-white">{provider.label}</div>
+                  <div className="text-sm text-muted-foreground">{provider.description}</div>
                 </div>
                 <ProviderStatusPill status={provider.status} />
               </div>
@@ -352,8 +309,14 @@ export default function PlaygroundPage() {
                 </Badge>
                 {provider.supportsStreaming ? (
                   <Badge variant="success">
+                    <Waves className="h-3 w-3" />
+                    {t("streaming", "streaming")}
+                  </Badge>
+                ) : null}
+                {provider.freeTierReady ? (
+                  <Badge variant="warning">
                     <Sparkles className="h-3 w-3" />
-                    {pickLocale(locale, { ru: "стриминг", en: "streaming" })}
+                    {t("free-tier ready", "free-tier ready")}
                   </Badge>
                 ) : null}
               </div>

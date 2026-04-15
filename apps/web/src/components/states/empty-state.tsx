@@ -20,11 +20,11 @@ export function EmptyState({
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-4 px-8 py-12 text-center">
-        <div className="rounded-2xl border border-border/70 bg-background/60 px-4 py-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
           {pickLocale(locale, { ru: "Пусто", en: "Empty" })}
         </div>
         <div className="space-y-2">
-          <h3 className="font-display text-2xl font-semibold">{title}</h3>
+          <h3 className="font-display text-2xl font-semibold text-white">{title}</h3>
           <p className="max-w-xl text-sm leading-6 text-muted-foreground">{description}</p>
         </div>
         {action}

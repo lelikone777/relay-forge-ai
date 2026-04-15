@@ -10,7 +10,7 @@ export function LanguageToggle() {
   const { locale, setLocale } = useI18n();
 
   return (
-    <div className="flex h-10 items-center gap-0.5 rounded-xl border border-border/70 bg-panel/70 p-1">
+    <div className="flex h-10 items-center gap-0.5 rounded-xl border border-white/10 bg-white/5 p-1 backdrop-blur">
       <div className="hidden px-1.5 text-muted-foreground min-[380px]:block">
         <Languages className="h-4 w-4" />
       </div>
